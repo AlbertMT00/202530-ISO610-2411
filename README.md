@@ -32,12 +32,12 @@ Albert Mateo Tejada
 Diego José Montero
 
 BACK-END:
-Luis Eduardo Lara Abreu 
+Carlos Josué Cruz Peguero 
 Abdalah Nina Mussa 
+Justin S. Uceta Montero 
 
 FRONT-END:
-Justin S. Uceta Montero 
-Carlos Josué Cruz Peguero 
+Luis Eduardo Lara Abreu 
 
 
 Ramas:
