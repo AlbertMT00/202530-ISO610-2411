@@ -38,3 +38,4 @@ Abdalah Nina Mussa
 FRONT-END:
 Justin S. Uceta Montero 
 Carlos Josué Cruz Peguero 
+Luis Eduardo Lara 
