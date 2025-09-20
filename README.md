@@ -28,16 +28,16 @@ Facilitar la gestión de información médica y administrativa en un solo lugar,
 Autores: 
 
 QA:
-Albert Mateo Tejada
-Diego José Montero
+-Albert Mateo Tejada
+-Diego José Montero
 
 BACK-END:
-Carlos Josué Cruz Peguero 
-Abdalah Nina Mussa 
-Justin S. Uceta Montero 
+-Carlos Josué Cruz Peguero 
+-Abdalah Nina Mussa 
+-Justin S. Uceta Montero 
 
 FRONT-END:
-Luis Eduardo Lara Abreu 
+-Luis Eduardo Lara Abreu 
 
 
 Ramas:
