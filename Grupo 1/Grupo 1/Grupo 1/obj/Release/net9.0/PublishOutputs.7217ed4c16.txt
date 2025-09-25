@@ -1,0 +1,7 @@
+C:\Users\cjjos\Documents\Unapec\Grupo 1\Grupo 1\obj\Release\net9.0\PubTmp\Out\Grupo 1.exe
+C:\Users\cjjos\Documents\Unapec\Grupo 1\Grupo 1\obj\Release\net9.0\PubTmp\Out\appsettings.Development.json
+C:\Users\cjjos\Documents\Unapec\Grupo 1\Grupo 1\obj\Release\net9.0\PubTmp\Out\appsettings.json
+C:\Users\cjjos\Documents\Unapec\Grupo 1\Grupo 1\obj\Release\net9.0\PubTmp\Out\Grupo 1.dll
+C:\Users\cjjos\Documents\Unapec\Grupo 1\Grupo 1\obj\Release\net9.0\PubTmp\Out\Grupo 1.deps.json
+C:\Users\cjjos\Documents\Unapec\Grupo 1\Grupo 1\obj\Release\net9.0\PubTmp\Out\Grupo 1.runtimeconfig.json
+C:\Users\cjjos\Documents\Unapec\Grupo 1\Grupo 1\obj\Release\net9.0\PubTmp\Out\Grupo 1.pdb
