@@ -65,30 +65,43 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
+    permissions: { contents: read }
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup .NET
+      - name: Show repo tree and csproj
+        run: |
+          echo "=== git ls-files *.csproj ==="
+          git ls-files "*.csproj" || true
+          echo "=== tree ==="
+          ls -R
+
+      - name: Setup .NET (8.0 LTS)
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '8.0.x'
 
+      - name: dotnet --info
+        run: dotnet --info
+
+      # RESTORE/BUILD usando la solución para abarcar todo
       - name: Restore
-        run: dotnet restore "Grupo 1/Grupo 1/Grupo 1.csproj"
+        run: dotnet restore "Grupo 1/Grupo 1.sln"
 
       - name: Build
-        run: dotnet build "Grupo 1/Grupo 1/Grupo 1.csproj" -c Release --no-restore
+        run: dotnet build "Grupo 1/Grupo 1.sln" -c Release --no-restore
 
-      - name: Publish
+      # PUBLICAR solo el proyecto web que vas a desplegar
+      - name: Publish WebApp
         run: dotnet publish "Grupo 1/Grupo 1/Grupo 1.csproj" -c Release -o ./publish --no-build
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: Grupo1               # el nombre exacto de tu App Service
+          app-name: Grupo1
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C7C7B6F2AEB242A9A56FC464A28F53E7 }}
           package: ./publish
+
+
