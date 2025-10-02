@@ -103,5 +103,3 @@ jobs:
           app-name: Grupo1
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C7C7B6F2AEB242A9A56FC464A28F53E7 }}
           package: ./publish
-
-
