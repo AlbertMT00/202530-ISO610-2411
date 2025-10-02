@@ -73,29 +73,29 @@ jobs:
 
       - name: Show repo tree and csproj
         run: |
-          echo "=== git ls-files *.csproj ==="
+          echo "=== csproj ==="
           git ls-files "*.csproj" || true
-          echo "=== tree ==="
-          ls -R
+          echo "=== sln ==="
+          git ls-files "*.sln" || true
 
-      - name: Setup .NET (8.0 LTS)
+      - name: Setup .NET (9.0)
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '9.0.x'
 
       - name: dotnet --info
         run: dotnet --info
 
-      # RESTORE/BUILD usando la solución para abarcar todo
+      # Usa la RUTA CORRECTA a la solución
       - name: Restore
-        run: dotnet restore "Grupo 1/Grupo 1.sln"
+        run: dotnet restore "Grupo 1/Grupo 1/Grupo 1.sln"
 
       - name: Build
-        run: dotnet build "Grupo 1/Grupo 1.sln" -c Release --no-restore
+        run: dotnet build "Grupo 1/Grupo 1/Grupo 1.sln" -c Release --no-restore
 
-      # PUBLICAR solo el proyecto web que vas a desplegar
+      # Publica SOLO el proyecto web correcto
       - name: Publish WebApp
-        run: dotnet publish "Grupo 1/Grupo 1/Grupo 1.csproj" -c Release -o ./publish --no-build
+        run: dotnet publish "Grupo 1/Grupo 1/Grupo 1/Grupo 1.csproj" -c Release -o ./publish --no-build
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
