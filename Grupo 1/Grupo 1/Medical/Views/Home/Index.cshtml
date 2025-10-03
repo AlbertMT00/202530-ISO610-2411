@@ -1,0 +1,160 @@
+﻿@{
+    ViewData["Title"] = "Dashboard - Sistema Médico";
+}
+
+<div class="header">
+    <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+    <div class="user-info">
+        <div class="avatar">MD</div>
+        <span>Administrador Médico</span>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-number">156</div>
+        <div class="stat-label">Pacientes Registrados</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="stat-number">23</div>
+        <div class="stat-label">Citas Hoy</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon warning">
+            <i class="fas fa-file-medical"></i>
+        </div>
+        <div class="stat-number">89</div>
+        <div class="stat-label">Exámenes Pendientes</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Acciones Rápidas</h2>
+    </div>
+    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <a href="@Url.Action("Create", "Users")" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Nuevo Paciente
+        </a>
+        <a href="@Url.Action("Index", "Users")" class="btn btn-outline">
+            <i class="fas fa-list"></i> Ver Todos los Pacientes
+        </a>
+        <a href="#" class="btn btn-outline">
+            <i class="fas fa-calendar-plus"></i> Nueva Cita
+        </a>
+        <a href="#" class="btn btn-outline">
+            <i class="fas fa-file-medical-alt"></i> Generar Reporte
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Pacientes Recientes</h2>
+        <a href="@Url.Action("Index", "Users")" class="btn btn-outline">Ver Todos</a>
+    </div>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre Completo</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th>Última Visita</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>María González Pérez</td>
+                    <td>maria.gonzalez@email.com</td>
+                    <td>+1 234 567 890</td>
+                    <td>15/03/2024</td>
+                    <td class="table-actions">
+                        <a href="#" class="btn btn-sm btn-outline">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Carlos Rodríguez López</td>
+                    <td>carlos.rodriguez@email.com</td>
+                    <td>+1 234 567 891</td>
+                    <td>14/03/2024</td>
+                    <td class="table-actions">
+                        <a href="#" class="btn btn-sm btn-outline">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Pacientes Recientes</h2>
+        <a href="@Url.Action("Index", "Users")" class="btn btn-outline">Ver Todos</a>
+    </div>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre Completo</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th>Última Visita</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    foreach (var user in Model.Take(3)) // Mostrar solo 3 pacientes
+                    {
+                        <tr>
+                            <td>@user.FirstName @user.LastName</td>
+                            <td>@user.Email</td>
+                            <td>@user.Phone</td>
+                            <td>@DateTime.Now.AddDays(-new Random().Next(1, 30)).ToString("dd/MM/yyyy")</td>
+                            <td class="table-actions">
+                                <a href="@Url.Action("Details", "Users", new { id = user.Id })" class="btn btn-sm btn-outline">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="@Url.Action("Edit", "Users", new { id = user.Id })" class="btn btn-sm btn-outline">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--gray);">
+                            <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <br>
+                            No hay pacientes registrados
+                            <br>
+                            <a href="@Url.Action("Create", "Users")" class="btn btn-primary btn-sm mt-2">
+                                <i class="fas fa-user-plus"></i> Registrar Primer Paciente
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

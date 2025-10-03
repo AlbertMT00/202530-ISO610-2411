@@ -1,0 +1,178 @@
+@model Medical.Models.User
+@{
+    ViewData["Title"] = "Detalles del Paciente";
+}
+
+<div class="header">
+    <h1><i class="fas fa-user-circle"></i> Detalles del Paciente</h1>
+    <div style="display: flex; gap: 10px;">
+        <a href="@Url.Action("Edit", "Users", new { id = Model.Id })" class="btn btn-outline">
+            <i class="fas fa-edit"></i> Editar
+        </a>
+        <a href="@Url.Action("Index", "Users")" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
+
+<div class="patient-details-container">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Información Personal</h2>
+        </div>
+        <div class="card-body">
+            <div class="details-grid">
+                <div class="detail-item">
+                    <label>Nombre Completo:</label>
+                    <span>@Model.FirstName @Model.LastName</span>
+                </div>
+                <div class="detail-item">
+                    <label>Email:</label>
+                    <span>@Model.Email</span>
+                </div>
+                <div class="detail-item">
+                    <label>Teléfono:</label>
+                    <span>@Model.Phone</span>
+                </div>
+                <div class="detail-item">
+                    <label>Fecha de Nacimiento:</label>
+                    <span>@Model.BirthDate.ToString("dd/MM/yyyy")</span>
+                </div>
+                <div class="detail-item">
+                    <label>Edad:</label>
+                    <span>@(DateTime.Now.Year - Model.BirthDate.Year) años</span>
+                </div>
+                <div class="detail-item">
+                    <label>Género:</label>
+                    <span>
+                        @Model.Gender
+                        @if (Model.Gender == "Femenino")
+                        {
+                            <i class="fas fa-venus" style="color: #e91e63; margin-left: 5px;"></i>
+                        }
+                        else if (Model.Gender == "Masculino")
+                        {
+                            <i class="fas fa-mars" style="color: #2196f3; margin-left: 5px;"></i>
+                        }
+                    </span>
+                </div>
+                <div class="detail-item">
+                    <label>Tipo Sanguíneo:</label>
+                    <span class="blood-type @Model.BloodType?.Replace("+","plus")?.Replace("-","minus")">
+                        @Model.BloodType
+                    </span>
+                </div>
+                <div class="detail-item">
+                    <label>Contacto de Emergencia:</label>
+                    <span>@Model.EmergencyContact</span>
+                </div>
+                <div class="detail-item full-width">
+                    <label>Dirección:</label>
+                    <span>@Model.Address</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Historial Médico</h2>
+        </div>
+        <div class="card-body">
+            @if (!string.IsNullOrEmpty(Model.MedicalHistory))
+            {
+                <div class="medical-history">
+                    @Html.Raw(Model.MedicalHistory.Replace("\n", "<br>"))
+                </div>
+            }
+            else
+            {
+                <p style="color: var(--gray); text-align: center; padding: 20px;">
+                    <i class="fas fa-file-medical" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <br>
+                    No hay historial médico registrado
+                </p>
+            }
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Información del Registro</h2>
+        </div>
+        <div class="card-body">
+            <div class="details-grid">
+                <div class="detail-item">
+                    <label>Fecha de Registro:</label>
+                    <span>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+                <div class="detail-item">
+                    <label>Última Actualización:</label>
+                    <span>@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .patient-details-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .detail-item label {
+        font-weight: 600;
+        color: var(--dark);
+        font-size: 0.9rem;
+    }
+
+    .detail-item span {
+        padding: 8px 12px;
+        background: var(--light);
+        border-radius: 5px;
+        border-left: 4px solid var(--primary);
+    }
+
+    .detail-item.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .medical-history {
+        background: var(--light);
+        padding: 20px;
+        border-radius: 5px;
+        border-left: 4px solid var(--success);
+        line-height: 1.6;
+    }
+
+    .blood-type {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        display: inline-block;
+    }
+    
+    .blood-type.Aplus { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+    .blood-type.Aminus { background: #f3e5f5; color: #7b1fa2; border: 1px solid #e1bee7; }
+    .blood-type.Bplus { background: #e8f5e8; color: #2e7d32; border: 1px solid #c8e6c9; }
+    .blood-type.Bminus { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
+    .blood-type.Oplus { background: #fff3e0; color: #ef6c00; border: 1px solid #ffe0b2; }
+    .blood-type.Ominus { background: #fce4ec; color: #ad1457; border: 1px solid #f8bbd9; }
+    .blood-type.ABplus { background: #e8eaf6; color: #303f9f; border: 1px solid #c5cae9; }
+    .blood-type.ABminus { background: #e0f2f1; color: #00695c; border: 1px solid #b2dfdb; }
+</style>

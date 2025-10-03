@@ -1,0 +1,108 @@
+@model Medical.Models.User
+@{
+    ViewData["Title"] = "Editar Paciente";
+}
+
+<div class="header">
+    <h1><i class="fas fa-edit"></i> Editar Paciente</h1>
+    <a href="@Url.Action("Details", "Users", new { id = Model.Id })" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Volver a detalles
+    </a>
+</div>
+
+<div class="form-container">
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="CreatedAt" />
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" asp-for="FirstName">Nombre *</label>
+                <input asp-for="FirstName" class="form-control" placeholder="Ingrese el nombre" required>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="form-label" asp-for="LastName">Apellidos *</label>
+                <input asp-for="LastName" class="form-control" placeholder="Ingrese los apellidos" required>
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" asp-for="Email">Email *</label>
+                <input asp-for="Email" type="email" class="form-control" placeholder="ejemplo@correo.com" required>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="form-label" asp-for="Phone">Teléfono *</label>
+                <input asp-for="Phone" class="form-control" placeholder="809-123-4567" required>
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" asp-for="BirthDate">Fecha de Nacimiento *</label>
+                <input asp-for="BirthDate" type="date" class="form-control" required>
+                <span asp-validation-for="BirthDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="form-label" asp-for="Gender">Género *</label>
+                <select asp-for="Gender" class="form-control" required>
+                    <option value="">Seleccione género</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Otro">Otro</option>
+                </select>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" asp-for="BloodType">Tipo Sanguíneo *</label>
+                <select asp-for="BloodType" class="form-control" required>
+                    <option value="">Seleccione tipo sanguíneo</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                </select>
+                <span asp-validation-for="BloodType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="form-label" asp-for="EmergencyContact">Contacto de Emergencia *</label>
+                <input asp-for="EmergencyContact" class="form-control" placeholder="Nombre y teléfono de contacto" required>
+                <span asp-validation-for="EmergencyContact" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" asp-for="Address">Dirección Completa *</label>
+            <input asp-for="Address" class="form-control" placeholder="Ingrese la dirección completa" required>
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" asp-for="MedicalHistory">Historial Médico</label>
+            <textarea asp-for="MedicalHistory" class="form-control" rows="4" placeholder="Alergias, condiciones médicas, medicamentos, cirugías previas, etc."></textarea>
+            <span asp-validation-for="MedicalHistory" class="text-danger"></span>
+        </div>
+
+        <div class="form-actions" style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px;">
+            <a href="@Url.Action("Details", "Users", new { id = Model.Id })" class="btn btn-outline">Cancelar</a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Actualizar Paciente
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

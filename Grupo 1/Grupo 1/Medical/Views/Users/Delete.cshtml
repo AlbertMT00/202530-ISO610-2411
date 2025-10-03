@@ -1,0 +1,145 @@
+@model Medical.Models.User
+@{
+    ViewData["Title"] = "Eliminar Paciente";
+}
+
+<div class="header">
+    <h1><i class="fas fa-trash-alt"></i> Eliminar Paciente</h1>
+    <a href="@Url.Action("Index", "Users")" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Volver a la lista
+    </a>
+</div>
+
+<div class="alert alert-danger">
+    <div class="alert-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    <div class="alert-content">
+        <h3>¿Está seguro que desea eliminar este paciente?</h3>
+        <p>Esta acción no se puede deshacer. Se eliminarán todos los datos del paciente permanentemente.</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Información del Paciente a Eliminar</h2>
+    </div>
+    <div class="card-body">
+        <div class="details-grid">
+            <div class="detail-item">
+                <label>Nombre Completo:</label>
+                <span>@Model.FirstName @Model.LastName</span>
+            </div>
+            <div class="detail-item">
+                <label>Email:</label>
+                <span>@Model.Email</span>
+            </div>
+            <div class="detail-item">
+                <label>Teléfono:</label>
+                <span>@Model.Phone</span>
+            </div>
+            <div class="detail-item">
+                <label>Edad:</label>
+                <span>@(DateTime.Now.Year - Model.BirthDate.Year) años</span>
+            </div>
+            <div class="detail-item">
+                <label>Tipo Sanguíneo:</label>
+                <span class="blood-type @Model.BloodType?.Replace("+","plus")?.Replace("-","minus")">
+                    @Model.BloodType
+                </span>
+            </div>
+            <div class="detail-item">
+                <label>Fecha de Registro:</label>
+                <span>@Model.CreatedAt.ToString("dd/MM/yyyy")</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-action="Delete" method="post" class="delete-form">
+    <input type="hidden" asp-for="Id" />
+    
+    <div class="form-actions" style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+        <a href="@Url.Action("Details", "Users", new { id = Model.Id })" class="btn btn-outline">
+            <i class="fas fa-times"></i> Cancelar
+        </a>
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash"></i> Confirmar Eliminación
+        </button>
+    </div>
+</form>
+
+<style>
+    .alert {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 20px;
+        background: #f8d7da;
+        color: #721c24;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border-left: 4px solid #dc3545;
+    }
+
+    .alert-icon {
+        font-size: 1.5rem;
+        color: #dc3545;
+    }
+
+    .alert-content h3 {
+        margin: 0 0 5px 0;
+        color: #721c24;
+    }
+
+    .alert-content p {
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    .delete-form {
+        margin-top: 30px;
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .detail-item label {
+        font-weight: 600;
+        color: var(--dark);
+        font-size: 0.9rem;
+    }
+
+    .detail-item span {
+        padding: 8px 12px;
+        background: var(--light);
+        border-radius: 5px;
+        border-left: 4px solid var(--danger);
+    }
+
+    .blood-type {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        display: inline-block;
+    }
+    
+    .blood-type.Aplus { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+    .blood-type.Aminus { background: #f3e5f5; color: #7b1fa2; border: 1px solid #e1bee7; }
+    .blood-type.Bplus { background: #e8f5e8; color: #2e7d32; border: 1px solid #c8e6c9; }
+    .blood-type.Bminus { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
+    .blood-type.Oplus { background: #fff3e0; color: #ef6c00; border: 1px solid #ffe0b2; }
+    .blood-type.Ominus { background: #fce4ec; color: #ad1457; border: 1px solid #f8bbd9; }
+    .blood-type.ABplus { background: #e8eaf6; color: #303f9f; border: 1px solid #c5cae9; }
+    .blood-type.ABminus { background: #e0f2f1; color: #00695c; border: 1px solid #b2dfdb; }
+</style>

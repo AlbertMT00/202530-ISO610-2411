@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Historial Médico";
+}
+
+<div class="header">
+    <h1><i class="fas fa-file-medical"></i> Historial Médico</h1>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Registros Médicos</h2>
+    </div>
+    <div style="padding: 20px;">
+        <p>Funcionalidad de historial médico en desarrollo...</p>
+        <div class="form-group">
+            <label class="form-label">Buscar Paciente</label>
+            <input type="text" class="form-control" placeholder="Nombre del paciente">
+        </div>
+        <button class="btn btn-primary mt-3">Buscar Historial</button>
+    </div>
+</div>
+@{
+    ViewData["Title"] = "Historial Médico";
+}
+
+<div class="header">
+    <h1><i class="fas fa-file-medical"></i> Historial Médico</h1>
+    <a href="@Url.Action("Index", "Users")" class="btn btn-primary">
+        <i class="fas fa-search"></i> Buscar Pacientes
+    </a>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-number">@ViewBag.TotalPatients</div>
+        <div class="stat-label">Pacientes Totales</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <i class="fas fa-file-medical-alt"></i>
+        </div>
+        <div class="stat-number">@ViewBag.RecordCount</div>
+        <div class="stat-label">Registros Médicos</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Buscar Historial</h2>
+    </div>
+    <div style="padding: 20px;">
+        <form method="get" action="@Url.Action("Index", "Users")">
+            <div class="form-group">
+                <label class="form-label">Nombre del Paciente</label>
+                <input type="text" name="search" class="form-control" placeholder="Ingrese nombre para buscar...">
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Buscar Historial
+            </button>
+        </form>
+    </div>
+</div>

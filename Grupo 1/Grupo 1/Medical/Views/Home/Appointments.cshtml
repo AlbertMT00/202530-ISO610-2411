@@ -1,0 +1,43 @@
+@{
+    ViewData["Title"] = "Citas Médicas";
+}
+
+<div class="header">
+    <h1><i class="fas fa-calendar-check"></i> Citas Médicas</h1>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Próximas Citas</h2>
+        <button class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nueva Cita
+        </button>
+    </div>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Paciente</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Médico</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>María González Pérez</td>
+                    <td>15/03/2024</td>
+                    <td>10:00 AM</td>
+                    <td>Dr. Rodríguez</td>
+                    <td><span style="color: green;">Confirmada</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline">Editar</button>
+                        <button class="btn btn-sm btn-danger">Cancelar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

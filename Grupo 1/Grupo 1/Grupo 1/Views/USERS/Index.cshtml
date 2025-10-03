@@ -1,0 +1,66 @@
+@model IEnumerable<MedicalUserCRUD.Entities.Models.User>
+@{
+    ViewData["Title"] = "Gestión de Pacientes";
+}
+
+<div class="header">
+    <h1><i class="fas fa-users"></i> Gestión de Pacientes</h1>
+    <a href="@Url.Action("Create", "Users")" class="btn btn-primary">
+        <i class="fas fa-user-plus"></i> Nuevo Paciente
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Lista de Pacientes</h2>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" class="form-control" placeholder="Buscar paciente..." style="width: 300px;">
+            <button class="btn btn-outline">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+        </div>
+    </div>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre Completo</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th>Tipo Sanguíneo</th>
+                    <th>Fecha Registro</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.Id</td>
+                        <td>@user.FirstName @user.LastName</td>
+                        <td>@user.Email</td>
+                        <td>@user.Phone</td>
+                        <td>
+                            <span style="padding: 4px 8px; background: #e3f2fd; border-radius: 4px; font-weight: 500;">
+                                @user.BloodType
+                            </span>
+                        </td>
+                        <td>@user.CreatedAt.ToString("dd/MM/yyyy")</td>
+                        <td class="table-actions">
+                            <a href="@Url.Action("Details", "Users", new { id = user.Id })" class="btn btn-sm btn-outline" title="Ver detalles">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="@Url.Action("Edit", "Users", new { id = user.Id })" class="btn btn-sm btn-outline" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="@Url.Action("Delete", "Users", new { id = user.Id })" class="btn btn-sm btn-danger" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

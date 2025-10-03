@@ -1,0 +1,734 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MediSys</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            /* Colores principales MediSys */
+            --primary: #2c7be5;
+            --primary-dark: #1a68d1;
+            --primary-light: #e8f2ff;
+            --secondary: #6e84a3;
+            --success: #00d97e;
+            --success-light: #e0f8ee;
+            --danger: #e63757;
+            --danger-light: #fde8ec;
+            --warning: #f6c343;
+            --warning-light: #fef6e6;
+            --info: #39afd1;
+            --light: #f9fbfd;
+            --dark: #12263f;
+            --gray: #95aac9;
+            --gray-light: #e3ebf6;
+            --white: #ffffff;
+            
+            /* Dimensiones */
+            --sidebar-width: 260px;
+            --header-height: 70px;
+            --border-radius: 10px;
+            --border-radius-sm: 6px;
+            --box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            --box-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #f0f4f8 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR MEJORADO ===== */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: var(--box-shadow-lg);
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-header .subtitle {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+        }
+
+        /* Menú con Checkboxes Mejorado */
+        .sidebar-menu {
+            list-style: none;
+            padding: 15px 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 2px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: var(--white);
+            border-left-color: rgba(255, 255, 255, 0.4);
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.18);
+            color: var(--white);
+            border-left-color: var(--white);
+            font-weight: 600;
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item i {
+            width: 22px;
+            margin-right: 14px;
+            font-size: 1.15rem;
+            text-align: center;
+        }
+
+        .menu-item span {
+            font-size: 0.95rem;
+            flex: 1;
+            font-weight: 500;
+        }
+
+        /* Checkbox Mejorado */
+        .menu-checkbox {
+            display: none;
+        }
+
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            margin-left: 8px;
+            cursor: pointer;
+        }
+
+        .menu-checkbox:checked + .menu-item .checkbox-custom {
+            background: var(--white);
+            border-color: var(--white);
+            transform: scale(1.1);
+        }
+
+        .menu-checkbox:checked + .menu-item .checkbox-custom::after {
+            content: '✓';
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* ===== CONTENIDO PRINCIPAL MEJORADO ===== */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: var(--transition);
+        }
+
+        /* Header Mejorado */
+        .header {
+            background: var(--white);
+            height: var(--header-height);
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 35px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .header-left h2 {
+            color: var(--dark);
+            font-size: 1.4rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 10px 18px;
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .user-menu:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(44, 123, 229, 0.3);
+            transition: var(--transition);
+        }
+
+        .user-menu:hover .user-avatar {
+            transform: scale(1.05);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        /* ===== CONTENIDO DE PÁGINA ===== */
+        .page-content {
+            padding: 35px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @@keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        /* ===== COMPONENTES MEJORADOS ===== */
+        .card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 25px;
+            border: none;
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow-lg);
+        }
+
+        .card-header {
+            padding: 22px 28px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--white);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        .card-body {
+            padding: 28px;
+        }
+
+        /* Botones Mejorados */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(44, 123, 229, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(44, 123, 229, 0.5);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #00c571 100%);
+            color: var(--white);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #d92b4c 100%);
+            color: var(--white);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        /* Tablas Mejoradas */
+        .table-container {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .table-container:hover {
+            box-shadow: var(--box-shadow-lg);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .table th {
+            background: var(--primary-light);
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+        }
+
+        .table tbody tr {
+            transition: var(--transition);
+        }
+
+        .table tbody tr:hover {
+            background: var(--light);
+            transform: scale(1.01);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        /* Forms Mejorados */
+        .form-container {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 35px;
+            max-width: 850px;
+            margin: 0 auto;
+            transition: var(--transition);
+        }
+
+        .form-container:hover {
+            box-shadow: var(--box-shadow-lg);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: var(--light);
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(44, 123, 229, 0.15);
+            background: var(--white);
+            transform: translateY(-1px);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 24px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .text-danger {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* ===== RESPONSIVE MEJORADO ===== */
+        @@media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: flex !important;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .page-content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 0 20px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .user-info {
+                display: none;
+            }
+            
+            .card-body {
+                padding: 20px;
+            }
+        }
+
+        /* Toggle Button para móviles */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: var(--border-radius-sm);
+            width: 45px;
+            height: 45px;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón toggle para móviles -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="app-container">
+        <!-- Sidebar Mejorado -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1>MediSys</h1>
+                <div class="subtitle">Sistema Médico Integral</div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li>
+                    <input type="checkbox" class="menu-checkbox" id="menu-home">
+                    <a href="@Url.Action("Index", "Home")" class="menu-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")">
+                        <i class="fas fa-home"></i>
+                        <span>Inicio</span>
+                        <div class="checkbox-custom"></div>
+                    </a>
+                </li>
+                <li>
+                    <input type="checkbox" class="menu-checkbox" id="menu-patients" checked>
+                    <a href="@Url.Action("Index", "Users")" class="menu-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")">
+                        <i class="fas fa-users"></i>
+                        <span>Gestión de Pacientes</span>
+                        <div class="checkbox-custom"></div>
+                    </a>
+                </li>
+                <li>
+                    <input type="checkbox" class="menu-checkbox" id="menu-appointments">
+                    <a href="@Url.Action("Index", "Appointments")" class="menu-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Appointments" ? "active" : "")">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Citas Médicas</span>
+                        <div class="checkbox-custom"></div>
+                    </a>
+                </li>
+                <li>
+                    <input type="checkbox" class="menu-checkbox" id="menu-history">
+                    <a href="@Url.Action("MedicalHistory", "Home")" class="menu-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "MedicalHistory" ? "active" : "")">
+                        <i class="fas fa-file-medical"></i>
+                        <span>Historia Médico</span>
+                        <div class="checkbox-custom"></div>
+                    </a>
+                </li>
+                <li>
+                    <input type="checkbox" class="menu-checkbox" id="menu-settings">
+                    <a href="@Url.Action("Settings", "Home")" class="menu-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Settings" ? "active" : "")">
+                        <i class="fas fa-cog"></i>
+                        <span>Configuración</span>
+                        <div class="checkbox-custom"></div>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Contenido Principal Mejorado -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <h2>@ViewData["Title"]</h2>
+                </div>
+                <div class="header-right">
+                    <div class="user-menu">
+                        <div class="user-avatar">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <div class="user-info">
+                            <span class="user-name">Dr. Administrador</span>
+                            <span class="user-role">Médico General</span>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content">
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // JavaScript Mejorado
+        $(document).ready(function() {
+            // Toggle sidebar en móviles
+            $('#menuToggle').on('click', function() {
+                $('#sidebar').toggleClass('active');
+            });
+
+            // Cerrar sidebar al hacer clic fuera en móviles
+            $(document).on('click', function(event) {
+                if ($(window).width() <= 1024) {
+                    if (!$(event.target).closest('#sidebar, #menuToggle').length) {
+                        $('#sidebar').removeClass('active');
+                    }
+                }
+            });
+
+            // Confirmación mejorada para eliminaciones
+            $('.btn-delete').on('click', function(e) {
+                e.preventDefault();
+                const url = $(this).attr('href');
+                
+                if (confirm('¿Está seguro de que desea eliminar este registro? Esta acción no se puede deshacer.')) {
+                    window.location.href = url;
+                }
+            });
+
+            // Efectos hover mejorados
+            $('.card, .btn, .menu-item').on('mouseenter', function() {
+                $(this).addClass('hover');
+            }).on('mouseleave', function() {
+                $(this).removeClass('hover');
+            });
+
+            // Actualizar checkboxes del menú
+            $('.menu-checkbox').on('change', function() {
+                const isChecked = $(this).is(':checked');
+                const menuItem = $(this).siblings('.menu-item');
+                
+                if (isChecked) {
+                    menuItem.addClass('checked');
+                } else {
+                    menuItem.removeClass('checked');
+                }
+            });
+
+            // Smooth scroll para anchors
+            $('a[href^="#"]').on('click', function(e) {
+                e.preventDefault();
+                const target = $(this.getAttribute('href'));
+                if (target.length) {
+                    $('html, body').animate({
+                        scrollTop: target.offset().top - 80
+                    }, 800);
+                }
+            });
+
+            // Actualizar visibilidad del botón menú
+            function updateMenuToggle() {
+                if ($(window).width() <= 1024) {
+                    $('#menuToggle').show();
+                } else {
+                    $('#menuToggle').hide();
+                    $('#sidebar').removeClass('active');
+                }
+            }
+
+            $(window).on('resize', updateMenuToggle);
+            updateMenuToggle();
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
