@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Configuración - Medicare{% endblock %}
+
+{% block navigation %}
+{% if session.get('role') == 'admin' %}
+    <a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+    <a href="{{ url_for('admin_usuarios') }}" class="nav-link">Usuarios</a>
+    <a href="{{ url_for('agregar_doctor') }}" class="nav-link">Agregar Doctor</a>
+    <a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+    <a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+{% else %}
+    <a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+    <a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+    <a href="{{ url_for('doctores') }}" class="nav-link">Doctores</a>
+    <a href="{{ url_for('recetas') }}" class="nav-link">Recetas</a>
+    <a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+{% endif %}
+<a href="{{ url_for('configuracion') }}" class="nav-link">Configuración</a>
+<a href="{{ url_for('logout') }}" class="nav-link">Salir</a>
+{% endblock %}
+
+{% block page_title %}Configuración del Perfil{% endblock %}
+
+{% block content %}
+<div class="split">
+    <!-- Información personal -->
+    <div class="card form-card">
+        <h3>Información personal</h3>
+        
+        <form method="POST" action="{{ url_for('actualizar_perfil') }}">
+            <div class="form-grid">
+                <div>
+                    <label class="label">Nombre completo *</label>
+                    <input type="text" name="nombre" class="input" value="{{ usuario['nombre'] }}" required />
+                </div>
+                <div>
+                    <label class="label">Correo electrónico *</label>
+                    <input type="email" name="email" class="input" value="{{ usuario['email'] }}" required />
+                </div>
+                <div>
+                    <label class="label">Teléfono</label>
+                    <input type="tel" name="telefono" class="input" value="{{ usuario['telefono'] or '' }}" placeholder="809-555-0000" />
+                </div>
+                <div>
+                    <label class="label">Cédula de Identidad</label>
+                    <input type="text" name="cedula" id="cedulaInputConfig" class="input" value="{{ usuario['cedula'] or '' }}" 
+                           placeholder="001-0000000-0" pattern="^\d{3}-\d{7}-\d{1}$" 
+                           title="Formato: 001-0000000-0" maxlength="13" />
+                    <p class="note" style="margin-top: 4px;">Formato: 001-0000000-0</p>
+                </div>
+            </div>
+            
+            <div style="background: #f0f9ff; padding: 14px; border-radius: 12px; margin: 16px 0;">
+                <p style="margin: 0; font-size: 13px;"><strong>Usuario:</strong> {{ usuario['username'] }}</p>
+                <p style="margin: 4px 0 0 0; font-size: 13px;"><strong>Rol:</strong> {{ usuario['role']|capitalize }}</p>
+                {% if usuario['especialidad'] %}
+                <p style="margin: 4px 0 0 0; font-size: 13px;"><strong>Especialidad:</strong> {{ usuario['especialidad'] }}</p>
+                {% endif %}
+            </div>
+            
+            <button type="submit" class="button-primary">Guardar cambios</button>
+        </form>
+    </div>
+</div>
+
+<!-- Cambiar contraseña -->
+<div class="card form-card" style="margin-top: 20px;">
+    <h3>Cambiar contraseña</h3>
+    <p class="note">Por tu seguridad, te recomendamos cambiar tu contraseña periódicamente.</p>
+    
+    <form method="POST" action="{{ url_for('cambiar_contrasena') }}">
+        <div class="form-grid">
+            <div>
+                <label class="label">Contraseña actual *</label>
+                <input type="password" name="password_actual" class="input" required />
+            </div>
+            <div>
+                <label class="label">Nueva contraseña *</label>
+                <input type="password" name="password_nueva" class="input" minlength="6" required />
+            </div>
+            <div>
+                <label class="label">Confirmar nueva contraseña *</label>
+                <input type="password" name="password_confirmar" class="input" minlength="6" required />
+            </div>
+        </div>
+        <button type="submit" class="button-primary">Cambiar contraseña</button>
+    </form>
+</div>
+
+<!-- Información de seguridad -->
+<div class="card" style="margin-top: 20px;">
+    <h3>Información de la cuenta</h3>
+    <div class="list">
+        <div class="list-item">
+            <strong>Fecha de registro</strong>
+            <span>{{ usuario['fecha_registro'][:10] }}</span>
+        </div>
+        <div class="list-item">
+            <strong>Estado de la cuenta</strong>
+            <span class="badge-pill" style="
+                background: {% if usuario['estado'] == 'activo' %}#d1fae5{% else %}#fee2e2{% endif %};
+                color: {% if usuario['estado'] == 'activo' %}#065f46{% else %}#991b1b{% endif %};
+            ">
+                {{ usuario['estado']|capitalize }}
+            </span>
+        </div>
+    </div>
+</div>
+
+<script>
+// Formato automático de cédula en configuración
+document.getElementById('cedulaInputConfig').addEventListener('input', function(e) {
+    let value = e.target.value;
+    
+    // Remover todos los caracteres que no sean números
+    value = value.replace(/\D/g, '');
+    
+    // Limitar a 11 dígitos
+    if (value.length > 11) {
+        value = value.substring(0, 11);
+    }
+    
+    // Aplicar formato: 001-0000000-0
+    let formatted = '';
+    
+    if (value.length > 0) {
+        // Primeros 3 dígitos
+        formatted = value.substring(0, 3);
+        
+        if (value.length > 3) {
+            // Agregar guion y siguientes 7 dígitos
+            formatted += '-' + value.substring(3, 10);
+            
+            if (value.length > 10) {
+                // Agregar guion y último dígito
+                formatted += '-' + value.substring(10, 11);
+            }
+        }
+    }
+    
+    e.target.value = formatted;
+});
+</script>
+{% endblock %}

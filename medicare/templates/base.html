@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Medicare{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}" />
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% if session.get('user_id') %}
+    <div class="app-shell">
+        <aside class="sidebar">
+            <a href="{{ url_for('dashboard') }}" class="brand" style="text-decoration: none; color: inherit; cursor: pointer;">
+                <div class="brand-icon"></div>
+                <div>
+                    <div class="brand-title">Medicare</div>
+                    <div class="brand-subtitle">Sistema Médico</div>
+                </div>
+            </a>
+            <nav class="nav-links">
+                {% block navigation %}{% endblock %}
+            </nav>
+        </aside>
+        <main class="content">
+            <header class="topbar">
+                <div class="page-title">{% block page_title %}Dashboard{% endblock %}</div>
+                <a href="{{ url_for('configuracion') }}" class="user-chip" style="text-decoration: none; color: inherit; cursor: pointer;">
+                    <div class="avatar">{{ session.get('nombre', 'U')[0]|upper }}{{ session.get('nombre', 'U').split()[-1][0]|upper if session.get('nombre', 'U').split()|length > 1 else '' }}</div>
+                    <div>
+                        <div class="chip-name">{{ session.get('nombre') }}</div>
+                        <div class="chip-role">{{ session.get('role')|capitalize }}</div>
+                    </div>
+                </a>
+            </header>
+            <div class="page-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" style="padding: 14px; margin-bottom: 16px; border-radius: 12px; background: {% if category == 'success' %}#d1fae5{% else %}#fee2e2{% endif %}; color: {% if category == 'success' %}#065f46{% else %}#991b1b{% endif %};">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+    {% else %}
+    {% block auth_content %}{% endblock %}
+    {% endif %}
+    
+    <script src="{{ url_for('static', filename='js/site.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,32 @@
+================================================================================
+LISTA COMPLETA DE USUARIOS - Medicare v4.3
+================================================================================
+
+ADMIN:
+admin / admin123
+
+DOCTORES (19):
+dracastillo / doctor123
+dralergologia / doctor123
+drcirugiagral / doctor123
+drdermatologia2 / doctor123
+drendocrinologia2 / doctor123
+drgastroenterologia / doctor123
+drginecologia2 / doctor123
+drmartinez / doctor123
+drmedicinainterna2 / doctor123
+drnefrologia / doctor123
+drneumologia / doctor123
+drneurologia2 / doctor123
+droftalmologia2 / doctor123
+droncologia / doctor123
+drotorrino / doctor123
+drpsiquiatria2 / doctor123
+drreumatologia / doctor123
+drtraumatologia2 / doctor123
+drurologia / doctor123
+
+PACIENTES:
+analopez / paciente123
+carlosperez / paciente123
+mariagonzalez / paciente123
