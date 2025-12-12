@@ -1,0 +1,753 @@
+:root {
+    --primary: #3a7cfb;
+    --primary-dark: #2f66d5;
+    --bg: #f5f7fb;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --card: #ffffff;
+    --border: #e5e7eb;
+    --success: #00b894;
+    --danger: #ef4444;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.app-shell {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+}
+
+.sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: #0f172a;
+    color: white;
+    padding: 28px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-icon {
+    background: rgba(255,255,255,0.12);
+    color: #7dd3fc;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+}
+
+.brand-title {
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.brand-subtitle {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-weight: 500;
+    transition: background .2s ease, transform .1s ease;
+}
+
+.nav-link:hover {
+    background: rgba(255,255,255,0.08);
+    transform: translateX(2px);
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.topbar {
+    height: 70px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 26px;
+}
+
+.page-title {
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.user-chip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+}
+
+.avatar {
+    background: #2563eb;
+    color: white;
+    font-weight: 700;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+}
+
+.chip-name {
+    font-weight: 600;
+}
+
+.chip-role {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.page-body {
+    padding: 0 26px 28px;
+}
+
+.hero-card {
+    background: linear-gradient(135deg, #4e8dfb, #3a7cfb);
+    color: white;
+    border-radius: 18px;
+    padding: 30px;
+    display: grid;
+    gap: 10px;
+    box-shadow: 0 15px 35px rgba(58,124,251,0.25);
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 14px;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 6px 18px rgba(15,23,42,0.05);
+}
+
+.card h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+}
+
+.card small {
+    color: var(--muted);
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 6px 0 0;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #eef2ff;
+    color: #4338ca;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.list-item strong {
+    font-weight: 700;
+}
+
+.button-primary {
+    background: var(--primary);
+    border: none;
+    color: white;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(58,124,251,0.25);
+    transition: transform .1s ease, background .2s ease;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 15px;
+}
+
+.button-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.form-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    display: grid;
+    gap: 14px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px 16px;
+}
+
+.label {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #f8fafc;
+    font-size: 14px;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+    font-size: 14px;
+    margin: 20px 0 10px 0;
+}
+
+.split {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr;
+    gap: 16px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 10px;
+}
+
+.tag {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: #e0f2fe;
+    color: #0369a1;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.note {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+@media (max-width: 960px) {
+    .app-shell {
+        grid-template-columns: 1fr;
+    }
+    .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+        flex-direction: row;
+        gap: 12px;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .nav-links {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    .split {
+        grid-template-columns: 1fr;
+    }
+}
+
+.hidden {
+    display: none;
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 25px 0 15px 0;
+}
+
+.info-block {
+    display: grid;
+    gap: 8px;
+    background: #f8fafc;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.small-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 6px;
+}
+
+.badge-pill {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #e5edff;
+    color: #3754d6;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.auth-page {
+    background: linear-gradient(135deg, #e0e7ff, #f0f7ff);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    padding: 26px;
+}
+
+.auth-wrapper {
+    max-width: 980px;
+    width: 100%;
+    display: grid;
+    gap: 30px;
+}
+
+.auth-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 6px 18px rgba(15,23,42,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.layout-services {
+    display: flex;
+    gap: 20px;
+}
+
+.services-list {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.services-detail {
+    flex: 2;
+}
+
+.services-detail h3 {
+    text-transform: uppercase;
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.button-secondary {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s ease;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+}
+
+.button-secondary:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Estilos responsivos para servicios */
+@media (max-width: 960px) {
+    .layout-services {
+        flex-direction: column;
+    }
+}
+
+/* Estilos para tablas y listas */
+.meta-item {
+    background: #f0f7ff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+.services-header {
+    font-size: 16px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+/* --- Doctores: filtros, tarjetas y perfil --- */
+
+.doctors-header {
+    margin-bottom: 18px;
+}
+
+.doctors-header h3 {
+    margin: 0 0 4px;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1.5fr;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.search-input {
+    /* reutiliza .input pero le damos prioridad en grid */
+}
+
+.filter-select {
+    /* solo para semántica/claridad, ya tiene estilos de .input */
+}
+
+@media (max-width: 960px) {
+    .filters {
+        grid-template-columns: 1fr;
+    }
+}
+
+.doctor-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #f8fafc;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.doctor-card:hover {
+    background: #e5edff;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    transform: translateY(-1px);
+}
+
+.doctor-card.active {
+    border-color: var(--primary);
+    background: #e0ecff;
+}
+
+.doctor-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.doctor-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid #e5edff;
+    background: #e5edff;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    color: var(--primary-dark);
+    font-size: 18px;
+}
+
+.doctor-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.doctor-info {
+    display: grid;
+    gap: 2px;
+}
+
+.doctor-name {
+    font-weight: 600;
+}
+
+.doctor-specialty {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.doctor-schedule {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.doctor-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.status-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+}
+
+.status-available {
+    background: #22c55e;
+}
+
+.status-busy {
+    background: #ef4444;
+}
+
+.status-break {
+    background: #f59e0b;
+}
+
+.status-offline {
+    background: #6b7280;
+}
+
+.status-label {
+    font-weight: 500;
+}
+
+.next-appointment {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+/* Perfil del doctor */
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.profile-main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.profile-meta {
+    display: grid;
+    gap: 4px;
+}
+
+.profile-name {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.profile-specialty {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.profile-contact {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.profile-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.profile-bio {
+    margin: 10px 0 14px;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.profile-extra {
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.profile-extra span {
+    display: block;
+}
+
+.profile-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+}
+
+.profile-actions .button-primary {
+    margin-top: 0;
+    margin-bottom: 0;
+    flex: 1;
+}
+
+.profile-actions .button-secondary {
+    flex: 1;
+}
+
+
+/* Layout específico para el formulario de citas */
+.form-grid-appointments {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px 16px;
+}
+
+/* Primera fila */
+.field-patient {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.field-service {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.field-doctor {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.field-date {
+    grid-column: 4;
+    grid-row: 1;
+}
+
+/* Segunda fila: Hora debajo de Paciente */
+.field-time {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+/* Versión responsiva: en móvil todo en una columna */
+@media (max-width: 960px) {
+    .form-grid-appointments {
+        grid-template-columns: 1fr;
+    }
+
+    .field-patient,
+    .field-service,
+    .field-doctor,
+    .field-date,
+    .field-time {
+        grid-column: 1;
+        grid-row: auto;
+    }
+}
+
+/* Botones secundarios */
+.button-secondary {
+    padding: 10px 20px;
+    background: #f3f4f6;
+    color: #374151;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.button-secondary:hover {
+    background: #e5e7eb;
+}

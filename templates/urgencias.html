@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Urgencias - Medicare{% endblock %}
+
+{% block navigation %}
+{% if session.get('role') == 'admin' %}
+    <a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+    <a href="{{ url_for('admin_usuarios') }}" class="nav-link">Usuarios</a>
+    <a href="{{ url_for('agregar_doctor') }}" class="nav-link">Agregar Doctor</a>
+    <a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+    <a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+    <a href="{{ url_for('configuracion') }}" class="nav-link">Configuración</a>
+{% else %}
+    <a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+    <a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+    <a href="{{ url_for('doctores') }}" class="nav-link">Doctores</a>
+    <a href="{{ url_for('recetas') }}" class="nav-link">Recetas</a>
+    <a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+    <a href="{{ url_for('configuracion') }}" class="nav-link">Configuración</a>
+{% endif %}
+<a href="{{ url_for('logout') }}" class="nav-link">Salir</a>
+{% endblock %}
+
+{% block page_title %}Urgencias Médicas{% endblock %}
+
+{% block content %}
+{% if session.get('role') == 'paciente' %}
+<div class="hero-card" style="background: linear-gradient(135deg, #ef4444, #dc2626); margin-bottom: 20px;">
+    <h2> Centro de Urgencias 24/7</h2>
+    <p>Si tienes una emergencia médica, repórtala aquí. Un doctor te contactará lo antes posible.</p>
+</div>
+{% endif %}
+
+<div class="split">
+    {% if session.get('role') == 'paciente' %}
+    <div class="form-card">
+        <h3>Reportar urgencia</h3>
+        
+        <form method="POST" action="{{ url_for('crear_urgencia') }}">
+            <div>
+                <label class="label">Describe tu urgencia *</label>
+                <textarea class="input" name="descripcion" rows="5" placeholder="Describe con detalle tu situación médica urgente..." required></textarea>
+            </div>
+            
+            <div style="margin-top: 16px;">
+                <label class="label">Nivel de urgencia *</label>
+                <select class="input" name="prioridad" required>
+                    <option value="media">Media - Necesito atención pronto</option>
+                    <option value="alta">Alta - Es urgente</option>
+                    <option value="critica">Crítica - Es una emergencia</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="button-primary" style="background: var(--danger);">Enviar urgencia</button>
+        </form>
+        
+        <div style="margin-top: 20px; padding: 14px; background: #fee2e2; border-radius: 12px; border-left: 4px solid #dc2626;">
+            <p style="margin: 0; font-size: 13px; color: #991b1b;">
+                <strong> En caso de emergencia grave:</strong><br>
+                Llama inmediatamente al 911 o acude a la sala de emergencias más cercana.
+            </p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <h3>{% if session.get('role') == 'doctor' %}Urgencias registradas{% else %}Mis urgencias{% endif %}</h3>
+        {% if urgencias|length == 0 %}
+        <p class="note">No hay urgencias registradas.</p>
+        {% else %}
+        <div class="list">
+            {% for urgencia in urgencias %}
+            <div class="list-item" style="flex-direction: column; align-items: flex-start; gap: 10px; border-left: 4px solid 
+                {% if urgencia['prioridad'] == 'critica' %}#dc2626
+                {% elif urgencia['prioridad'] == 'alta' %}#f59e0b
+                {% elif urgencia['prioridad'] == 'media' %}#3b82f6
+                {% else %}#6b7280{% endif %};">
+                
+                <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                    <div>
+                        <strong>{{ urgencia['paciente_nombre'] }}</strong>
+                        <div class="note" style="font-size: 12px;">
+                             {{ urgencia['fecha_creacion'][:16] }}
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span class="badge-pill" style="
+                            background: {% if urgencia['prioridad'] == 'critica' %}#fee2e2{% elif urgencia['prioridad'] == 'alta' %}#fef3c7{% elif urgencia['prioridad'] == 'media' %}#dbeafe{% else %}#f3f4f6{% endif %};
+                            color: {% if urgencia['prioridad'] == 'critica' %}#991b1b{% elif urgencia['prioridad'] == 'alta' %}#92400e{% elif urgencia['prioridad'] == 'media' %}#1e40af{% else %}#374151{% endif %};
+                        ">
+                            {{ urgencia['prioridad']|capitalize }}
+                        </span>
+                        <span class="badge-pill" style="
+                            background: {% if urgencia['estado'] == 'pendiente' %}#fef3c7{% elif urgencia['estado'] == 'en_atencion' %}#dbeafe{% else %}#d1fae5{% endif %};
+                            color: {% if urgencia['estado'] == 'pendiente' %}#92400e{% elif urgencia['estado'] == 'en_atencion' %}#1e40af{% else %}#065f46{% endif %};
+                        ">
+                            {% if urgencia['estado'] == 'en_atencion' %}En atención{% else %}{{ urgencia['estado']|capitalize }}{% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; width: 100%;">
+                    <p style="margin: 0; font-size: 14px; line-height: 1.5;">
+                        {{ urgencia['descripcion'] }}
+                    </p>
+                </div>
+                
+                {% if urgencia['doctor_nombre'] %}
+                <div class="note" style="font-size: 12px;">
+                    ‍ Atendido por: {{ urgencia['doctor_nombre'] }}
+                </div>
+                {% endif %}
+                
+                {% if urgencia['fecha_resolucion'] %}
+                <div class="note" style="font-size: 12px; color: var(--success);">
+                     Resuelta el {{ urgencia['fecha_resolucion'][:16] }}
+                </div>
+                {% endif %}
+                
+                {% if session.get('role') == 'doctor' and urgencia['estado'] != 'resuelta' %}
+                <form method="POST" action="{{ url_for('atender_urgencia', id=urgencia['id']) }}" style="display: flex; gap: 8px; margin-top: 8px;">
+                    {% if urgencia['estado'] == 'pendiente' %}
+                    <button type="submit" name="estado" value="en_atencion" class="button-secondary" style="padding: 8px 14px; font-size: 13px;">
+                        Atender
+                    </button>
+                    {% endif %}
+                    <button type="submit" name="estado" value="resuelta" class="button-primary" style="padding: 8px 14px; font-size: 13px; background: var(--success);">
+                        Marcar como resuelta
+                    </button>
+                </form>
+                {% endif %}
+                
+                {% if session.get('role') == 'admin' %}
+                <form method="POST" action="{{ url_for('eliminar_urgencia', id=urgencia['id']) }}" style="display: inline; margin-top: 8px;" onsubmit="return confirm('¿Estás seguro de eliminar esta urgencia? Esta acción no se puede deshacer.');">
+                    <button type="submit" class="button-secondary" style="padding: 8px 14px; font-size: 13px; background: #fee2e2; color: #991b1b; border-color: #fca5a5;">
+                         Eliminar
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if session.get('role') == 'paciente' %}
+<div class="card" style="margin-top: 20px;">
+    <h3>Información importante</h3>
+    <div class="list">
+        <div class="list-item">
+            <div>
+                <strong>Tiempo de respuesta</strong>
+                <small class="note">Un doctor revisará tu urgencia en los próximos 15-30 minutos</small>
+            </div>
+        </div>
+        <div class="list-item">
+            <div>
+                <strong>Contacto de emergencia</strong>
+                <small class="note">emergencias@medicare.com | 849-432-2213</small>
+            </div>
+        </div>
+        <div class="list-item">
+            <div>
+                <strong>Servicio 24/7</strong>
+                <small class="note">Nuestro equipo está disponible las 24 horas del día</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

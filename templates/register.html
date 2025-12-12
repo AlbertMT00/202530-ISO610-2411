@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Registrarse - Medicare{% endblock %}
+
+{% block auth_content %}
+<body class="auth-page">
+    <div class="auth-wrapper">
+        <div class="hero-card">
+            <div class="badge">MEDICARE</div>
+            <h1>Sistema de Gestión Médica</h1>
+            <p>Completa el formulario para crear tu cuenta en el sistema.</p>
+        </div>
+        <div class="card auth-card">
+            <div>
+                <h3>Crear cuenta nueva</h3>
+                <p class="note">Completa el formulario para registrarte como paciente.</p>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" style="padding: 14px; margin: 16px 0; border-radius: 12px; background: {% if category == 'success' %}#d1fae5{% else %}#fee2e2{% endif %}; color: {% if category == 'success' %}#065f46{% else %}#991b1b{% endif %};">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST" action="{{ url_for('register') }}">
+                    <div class="form-grid">
+                        <div>
+                            <label class="label">Nombre completo</label>
+                            <input class="input" type="text" name="nombre" placeholder="Nombre y apellidos" required />
+                        </div>
+                        <div>
+                            <label class="label">Correo electrónico</label>
+                            <input class="input" type="email" name="email" placeholder="correo@ejemplo.com" required />
+                        </div>
+                        <div>
+                            <label class="label">Nombre de usuario</label>
+                            <input class="input" type="text" name="username" placeholder="usuario123" required />
+                        </div>
+                        <div>
+                            <label class="label">Teléfono</label>
+                            <input class="input" type="tel" name="telefono" placeholder="809-555-0000" />
+                        </div>
+                        <div>
+                            <label class="label">Cédula de Identidad</label>
+                            <input class="input" type="text" name="cedula" id="cedulaInput" placeholder="001-0000000-0" 
+                                   pattern="^\d{3}-\d{7}-\d{1}$" title="Formato: 001-0000000-0" 
+                                   maxlength="13" required />
+                            <p class="note" style="margin-top: 4px; font-size: 12px;">Formato: 001-0000000-0</p>
+                        </div>
+                        <div>
+                            <label class="label">Contraseña</label>
+                            <input class="input" type="password" name="password" placeholder="Mínimo 6 caracteres" minlength="6" required />
+                        </div>
+                        <div>
+                            <label class="label">Confirmar contraseña</label>
+                            <input class="input" type="password" name="confirm_password" placeholder="Repite la contraseña" minlength="6" required />
+                        </div>
+                    </div>
+                    <label class="checkbox">
+                        <input type="checkbox" required /> Acepto los términos y la política de privacidad
+                    </label>
+                    <button type="submit" class="button-primary">Crear cuenta</button>
+                </form>
+                <p class="note" style="text-align: center; margin-top: 24px;">
+                    ¿Ya tienes una cuenta? <a href="{{ url_for('login') }}">Inicia sesión aquí</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    // Formato automático de cédula: 001-0000000-0
+    document.getElementById('cedulaInput').addEventListener('input', function(e) {
+        let value = e.target.value;
+        
+        // Remover todos los caracteres que no sean números
+        value = value.replace(/\D/g, '');
+        
+        // Limitar a 11 dígitos
+        if (value.length > 11) {
+            value = value.substring(0, 11);
+        }
+        
+        // Aplicar formato: 001-0000000-0
+        let formatted = '';
+        
+        if (value.length > 0) {
+            // Primeros 3 dígitos
+            formatted = value.substring(0, 3);
+            
+            if (value.length > 3) {
+                // Agregar guion y siguientes 7 dígitos
+                formatted += '-' + value.substring(3, 10);
+                
+                if (value.length > 10) {
+                    // Agregar guion y último dígito
+                    formatted += '-' + value.substring(10, 11);
+                }
+            }
+        }
+        
+        e.target.value = formatted;
+    });
+    </script>
+</body>
+{% endblock %}

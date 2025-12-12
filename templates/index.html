@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Bienvenido - Medicare{% endblock %}
+
+{% block auth_content %}
+<body class="auth-page">
+    <div class="auth-wrapper">
+        <div class="hero-card">
+            <div class="badge">MEDICARE</div>
+            <h1>Sistema de Gestión Médica</h1>
+            <p>Accede para gestionar citas, recetas y especialidades médicas.</p>
+        </div>
+        <div class="card auth-card">
+            <div style="text-align: center;">
+                <h3>Bienvenido a Medicare</h3>
+                <p class="note">Selecciona una opción para continuar</p>
+                <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 32px;">
+                    <a class="button-primary" href="{{ url_for('login') }}">Iniciar sesión</a>
+                    <a class="button-secondary" href="{{ url_for('register') }}">Registrarse como paciente</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

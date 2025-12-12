@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Cita - Medicare{% endblock %}
+
+{% block navigation %}
+{% if session.get('role') == 'admin' %}
+    <a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+    <a href="{{ url_for('admin_usuarios') }}" class="nav-link">Usuarios</a>
+    <a href="{{ url_for('agregar_doctor') }}" class="nav-link">Agregar Doctor</a>
+    <a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+    <a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+    <a href="{{ url_for('configuracion') }}" class="nav-link">Configuración</a>
+{% else %}
+    <a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+    <a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+    <a href="{{ url_for('doctores') }}" class="nav-link">Doctores</a>
+    <a href="{{ url_for('recetas') }}" class="nav-link">Recetas</a>
+    <a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+    <a href="{{ url_for('configuracion') }}" class="nav-link">Configuración</a>
+{% endif %}
+<a href="{{ url_for('logout') }}" class="nav-link">Salir</a>
+{% endblock %}
+
+{% block page_title %}Editar Cita{% endblock %}
+
+{% block content %}
+<div class="card form-card" style="max-width: 600px; margin: 0 auto;">
+    <h3>Modificar información de la cita</h3>
+    
+    <form method="POST" action="{{ url_for('editar_cita', id=cita['id']) }}">
+        <div class="form-grid">
+            <div>
+                <label class="label">Fecha *</label>
+                <input class="input" type="date" name="fecha" value="{{ cita['fecha'] }}" required />
+            </div>
+
+            <div>
+                <label class="label">Hora *</label>
+                <input class="input" type="time" name="hora" value="{{ cita['hora'] }}" required />
+            </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+            <label class="label">Motivo de la consulta</label>
+            <textarea class="input" name="motivo" rows="3" placeholder="Describe el motivo de la consulta">{{ cita['motivo'] or '' }}</textarea>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 20px;">
+            <button type="submit" class="button-primary">Guardar cambios</button>
+            <a href="{{ url_for('citas') }}" class="button-secondary" style="text-decoration: none; display: inline-block; text-align: center;">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

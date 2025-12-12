@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Medicare{% endblock %}
+
+{% block navigation %}
+<a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+<a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+<a href="{{ url_for('doctores') }}" class="nav-link">Doctores</a>
+<a href="{{ url_for('recetas') }}" class="nav-link">Recetas</a>
+<a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+<a href="{{ url_for('configuracion') }}" class="nav-link">Configuración</a>
+<a href="{{ url_for('logout') }}" class="nav-link">Salir</a>
+{% endblock %}
+
+{% block page_title %}Inicio - Mi Panel{% endblock %}
+
+{% block content %}
+<div class="hero-card">
+    <h2>Bienvenido/a, {{ session.get('nombre').split()[0] }}</h2>
+    <p>Gestiona tus citas, consulta tus recetas y accede a atención médica de calidad.</p>
+</div>
+
+<div class="card-grid" style="margin-top: 20px;">
+    <div class="card">
+        <h3>Próximas citas</h3>
+        <p class="note">Consultas programadas</p>
+        <div class="stat-number" id="proximasCitas">-</div>
+    </div>
+    <div class="card">
+        <h3>Citas futuras</h3>
+        <p class="note">Después de hoy</p>
+        <div class="stat-number" style="color: var(--primary);" id="citasFuturas">-</div>
+    </div>
+    <div class="card">
+        <h3>Recetas activas</h3>
+        <p class="note">Medicamentos recetados</p>
+        <div class="stat-number" style="color: var(--success);" id="recetasActivas">-</div>
+    </div>
+</div>
+
+<div style="margin-top: 24px;">
+    <h3 style="margin-bottom: 14px;">Accesos rápidos</h3>
+    <div class="card">
+        <div class="list">
+            <a href="{{ url_for('citas') }}" class="list-item" style="text-decoration: none; color: inherit;">
+                <div>
+                    <strong>Agendar cita</strong>
+                    <small class="note">Programa una consulta con tu médico</small>
+                </div>
+            </a>
+            <a href="{{ url_for('recetas') }}" class="list-item" style="text-decoration: none; color: inherit;">
+                <div>
+                    <strong>Ver mis recetas</strong>
+                    <small class="note">Consulta tus recetas médicas</small>
+                </div>
+            </a>
+            <a href="{{ url_for('doctores') }}" class="list-item" style="text-decoration: none; color: inherit;">
+                <div>
+                    <strong>Buscar doctores</strong>
+                    <small class="note">Encuentra especialistas disponibles</small>
+                </div>
+            </a>
+            <a href="{{ url_for('urgencias') }}" class="list-item" style="text-decoration: none; color: inherit;">
+                <div>
+                    <strong>Reportar urgencia</strong>
+                    <small class="note">Comunícate con urgencias 24/7</small>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="split" style="margin-top: 24px;">
+    <a href="{{ url_for('doctores') }}" style="text-decoration: none; color: inherit;">
+        <div class="card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">
+            <h3>Especialidades disponibles</h3>
+            <div class="list">
+                <div class="list-item">
+                    <span>Cardiología</span>
+                    <strong>Dr. Martínez</strong>
+                </div>
+                <div class="list-item">
+                    <span>Pediatría</span>
+                    <strong>Dra. Castillo</strong>
+                </div>
+                <div class="list-item">
+                    <span>Traumatología</span>
+                    <strong>Dr. López</strong>
+                </div>
+                <div class="list-item">
+                    <span>Neurología</span>
+                    <strong>Dra. González</strong>
+                </div>
+            </div>
+        </div>
+    </a>
+    
+    <div class="card">
+        <h3>Información de contacto</h3>
+        <div class="list">
+            <div class="list-item">
+                <strong>Clínica</strong>
+                <span>Clínica Medicare</span>
+            </div>
+            <div class="list-item">
+                <strong>Dirección</strong>
+                <span>Av. Máximo Gómez, DN</span>
+            </div>
+            <div class="list-item">
+                <strong>Teléfono</strong>
+                <span>849-432-2213</span>
+            </div>
+            <div class="list-item">
+                <strong>Emergencias</strong>
+                <span>emergencias@medicare.com</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Cargar estadísticas
+fetch('/api/stats')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('proximasCitas').textContent = data.proximas_citas || 0;
+        document.getElementById('citasFuturas').textContent = data.citas_futuras || 0;
+        document.getElementById('recetasActivas').textContent = data.recetas_activas || 0;
+    });
+</script>
+{% endblock %}
