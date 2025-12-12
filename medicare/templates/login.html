@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar sesión - Medicare{% endblock %}
+
+{% block auth_content %}
+<body class="auth-page">
+    <div class="auth-wrapper">
+        <div class="hero-card">
+            <div class="badge">MEDICARE</div>
+            <h1>Sistema de Gestión Médica</h1>
+            <p>Accede para gestionar citas, recetas y especialidades médicas.</p>
+        </div>
+        <div class="card auth-card">
+            <div>
+                <h3>Bienvenido de nuevo</h3>
+                <p class="note">Ingresa tus credenciales para continuar.</p>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" style="padding: 14px; margin: 16px 0; border-radius: 12px; background: {% if category == 'success' %}#d1fae5{% else %}#fee2e2{% endif %}; color: {% if category == 'success' %}#065f46{% else %}#991b1b{% endif %};">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="form-grid">
+                        <div>
+                            <label class="label">Usuario</label>
+                            <input class="input" type="text" name="username" placeholder="Ingresa tu usuario" required />
+                        </div>
+                        <div>
+                            <label class="label">Contraseña</label>
+                            <input class="input" type="password" name="password" placeholder="Ingresa tu contraseña" required />
+                        </div>
+                    </div>
+                    <button type="submit" class="button-primary">Iniciar sesión</button>
+                </form>
+                <p class="note" style="text-align: center; margin-top: 24px;">
+                    ¿No tienes una cuenta? <a href="{{ url_for('register') }}">Regístrate aquí</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

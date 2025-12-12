@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Panel de Administración - Medicare{% endblock %}
+
+{% block navigation %}
+<a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+<a href="{{ url_for('admin_usuarios') }}" class="nav-link">Usuarios</a>
+<a href="{{ url_for('agregar_doctor') }}" class="nav-link">Agregar Doctor</a>
+<a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+<a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+<a href="{{ url_for('configuracion') }}" class="nav-link">Configuración</a>
+<a href="{{ url_for('logout') }}" class="nav-link">Salir</a>
+{% endblock %}
+
+{% block page_title %}Panel de Administración{% endblock %}
+
+{% block content %}
+<div class="hero-card">
+    <h2>Panel de Administración</h2>
+    <p>Gestiona usuarios, doctores y supervisa el sistema completo de Medicare.</p>
+</div>
+
+<div style="margin-top: 24px;">
+    <h3 style="margin-bottom: 14px;">Accesos rápidos de administración</h3>
+    <div class="card">
+        <div class="list">
+            <a href="{{ url_for('agregar_doctor') }}" class="list-item" style="text-decoration: none; color: inherit;">
+                <div>
+                    <strong>Agregar nuevo doctor</strong>
+                    <small class="note">Registra un nuevo médico en el sistema</small>
+                </div>
+            </a>
+            <a href="{{ url_for('admin_usuarios') }}" class="list-item" style="text-decoration: none; color: inherit;">
+                <div>
+                    <strong>Gestionar usuarios</strong>
+                    <small class="note">Ver y administrar todos los usuarios del sistema</small>
+                </div>
+            </a>
+            <a href="{{ url_for('citas') }}" class="list-item" style="text-decoration: none; color: inherit;">
+                <div>
+                    <strong>Ver todas las citas</strong>
+                    <small class="note">Supervisa las citas programadas</small>
+                </div>
+            </a>
+            <a href="{{ url_for('urgencias') }}" class="list-item" style="text-decoration: none; color: inherit;">
+                <div>
+                    <strong>Monitorear urgencias</strong>
+                    <small class="note">Revisa las alertas y urgencias del sistema</small>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="split" style="margin-top: 24px;">
+    <div class="card">
+        <h3>Información del sistema</h3>
+        <div class="list">
+            <div class="list-item">
+                <strong>Nombre</strong>
+                <span>Medicare</span>
+            </div>
+            <div class="list-item">
+                <strong>Versión</strong>
+                <span>1.0.0</span>
+            </div>
+            <div class="list-item">
+                <strong>Estado</strong>
+                <span style="color: var(--success);">Operativo</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3>Configuración</h3>
+        <div class="list">
+            <div class="list-item">
+                <strong>Clínica</strong>
+                <span>Clínica Medicare</span>
+            </div>
+            <div class="list-item">
+                <strong>Dirección</strong>
+                <span>Av. Máximo Gómez, DN</span>
+            </div>
+            <div class="list-item">
+                <strong>Teléfono</strong>
+                <span>849-432-2213</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

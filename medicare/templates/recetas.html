@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+
+{% block title %}Recetas - Medicare{% endblock %}
+
+{% block navigation %}
+<a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+<a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+<a href="{{ url_for('doctores') }}" class="nav-link">Doctores</a>
+<a href="{{ url_for('recetas') }}" class="nav-link">Recetas</a>
+<a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+<a href="{{ url_for('configuracion') }}" class="nav-link">Configuración</a>
+<a href="{{ url_for('logout') }}" class="nav-link">Salir</a>
+{% endblock %}
+
+{% block page_title %}Recetas Médicas{% endblock %}
+
+{% block content %}
+<div class="split">
+    {% if session.get('role') == 'doctor' %}
+    <div class="form-card">
+        <h3>Nueva receta</h3>
+        
+        <form method="POST" action="{{ url_for('crear_receta') }}">
+            <div class="form-grid">
+                <div>
+                    <label class="label">Paciente *</label>
+                    <div style="position: relative;">
+                        <input class="input" type="text" id="pacienteSearchInput" placeholder="Buscar paciente..." oninput="filtrarPacientes()" onfocus="mostrarPacientes()" />
+                        <input type="hidden" name="paciente_id" id="pacienteIdHidden" required />
+                        <div id="pacientesDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 8px; max-height: 300px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            {% for paciente in pacientes %}
+                            <div class="paciente-option" data-id="{{ paciente['id'] }}" data-nombre="{{ paciente['nombre'] }}" onclick="seleccionarPaciente({{ paciente['id'] }}, '{{ paciente['nombre'] }}')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">
+                                {{ paciente['nombre'] }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="label">Medicamento *</label>
+                    <div style="position: relative;">
+                        <input class="input" type="text" id="medicamentoSearchInput" placeholder="Buscar o escribir medicamento..." oninput="filtrarMedicamentos()" onfocus="mostrarMedicamentos()" />
+                        <input type="hidden" name="medicamento" id="medicamentoInput" required />
+                        <div id="medicamentosDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 8px; max-height: 300px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <div class="medicamento-option" data-value="Amoxicilina" onclick="seleccionarMedicamento('Amoxicilina')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">Amoxicilina</div>
+                            <div class="medicamento-option" data-value="Lisinopril" onclick="seleccionarMedicamento('Lisinopril')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">Lisinopril</div>
+                            <div class="medicamento-option" data-value="Ibuprofeno" onclick="seleccionarMedicamento('Ibuprofeno')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">Ibuprofeno</div>
+                            <div class="medicamento-option" data-value="Metformina" onclick="seleccionarMedicamento('Metformina')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">Metformina</div>
+                            <div class="medicamento-option" data-value="Omeprazol" onclick="seleccionarMedicamento('Omeprazol')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">Omeprazol</div>
+                            <div class="medicamento-option" data-value="Atorvastatina" onclick="seleccionarMedicamento('Atorvastatina')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">Atorvastatina</div>
+                            <div class="medicamento-option" data-value="Losartán" onclick="seleccionarMedicamento('Losartán')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">Losartán</div>
+                            <div class="medicamento-option" data-value="Paracetamol" onclick="seleccionarMedicamento('Paracetamol')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">Paracetamol</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="label">Dosis *</label>
+                    <input class="input" name="dosis" placeholder="ej: 500 mg" required />
+                </div>
+                <div>
+                    <label class="label">Frecuencia *</label>
+                    <div style="position: relative;">
+                        <input class="input" type="text" id="frecuenciaSearchInput" placeholder="Buscar frecuencia..." oninput="filtrarFrecuencias()" onfocus="mostrarFrecuencias()" />
+                        <input type="hidden" name="frecuencia" id="frecuenciaInput" required />
+                        <div id="frecuenciasDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 8px; max-height: 200px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <div class="frecuencia-option" data-value="Cada 8h" onclick="seleccionarFrecuencia('Cada 8h')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">Cada 8 horas</div>
+                            <div class="frecuencia-option" data-value="Cada 12h" onclick="seleccionarFrecuencia('Cada 12h')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">Cada 12 horas</div>
+                            <div class="frecuencia-option" data-value="Cada 24h" onclick="seleccionarFrecuencia('Cada 24h')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">Cada 24 horas (Diaria)</div>
+                            <div class="frecuencia-option" data-value="Cada 48h" onclick="seleccionarFrecuencia('Cada 48h')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">Cada 48 horas</div>
+                            <div class="frecuencia-option" data-value="3 veces al día" onclick="seleccionarFrecuencia('3 veces al día')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">3 veces al día</div>
+                            <div class="frecuencia-option" data-value="2 veces al día" onclick="seleccionarFrecuencia('2 veces al día')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">2 veces al día</div>
+                            <div class="frecuencia-option" data-value="1 vez al día" onclick="seleccionarFrecuencia('1 vez al día')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">1 vez al día</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="label">Duración *</label>
+                    <div style="position: relative;">
+                        <input class="input" type="text" id="duracionSearchInput" placeholder="Buscar duración..." oninput="filtrarDuraciones()" onfocus="mostrarDuraciones()" />
+                        <input type="hidden" name="duracion" id="duracionInput" required />
+                        <div id="duracionesDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 8px; max-height: 200px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <div class="duracion-option" data-value="3 días" onclick="seleccionarDuracion('3 días')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">3 días</div>
+                            <div class="duracion-option" data-value="5 días" onclick="seleccionarDuracion('5 días')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">5 días</div>
+                            <div class="duracion-option" data-value="7 días" onclick="seleccionarDuracion('7 días')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">7 días</div>
+                            <div class="duracion-option" data-value="10 días" onclick="seleccionarDuracion('10 días')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">10 días</div>
+                            <div class="duracion-option" data-value="14 días" onclick="seleccionarDuracion('14 días')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">14 días</div>
+                            <div class="duracion-option" data-value="30 días" onclick="seleccionarDuracion('30 días')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">30 días</div>
+                            <div class="duracion-option" data-value="90 días" onclick="seleccionarDuracion('90 días')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">90 días</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 16px;">
+                <label class="label">Indicaciones especiales</label>
+                <textarea class="input" name="indicaciones" rows="3" placeholder="Recomendaciones o recordatorios para el paciente"></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="button-primary">Guardar receta</button>
+                <button type="button" class="button-secondary" onclick="window.print()">Imprimir</button>
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div class="card">
+        <h3>Mis recetas</h3>
+        <p class="note">Solo los doctores pueden crear recetas. Aquí puedes ver las recetas que te han prescrito.</p>
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <h3>Recetas recientes</h3>
+        {% if recetas|length == 0 %}
+        <p class="note">Aún no hay recetas registradas.</p>
+        {% else %}
+        <div class="list">
+            {% for receta in recetas %}
+            <div class="list-item" style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 15px; color: #111827; margin-bottom: 4px;">
+                            {{ receta['paciente_nombre'] }}
+                        </div>
+                        <div style="font-size: 12px; color: #6b7280;">
+                            Prescrito por: {{ receta['doctor_nombre'] }}
+                        </div>
+                    </div>
+                    <span style="font-size: 12px; color: #6b7280; background: #f3f4f6; padding: 4px 10px; border-radius: 6px;">
+                        {{ receta['fecha_emision'][:10] }}
+                    </span>
+                </div>
+                
+                <div style="background: #f0f9ff; padding: 14px; border-radius: 10px; border-left: 4px solid #3b82f6;">
+                    <div style="font-weight: 600; color: #1e40af; margin-bottom: 10px; font-size: 14px;">
+                        {{ receta['medicamento'] }}
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-bottom: 8px;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 12px; color: #6b7280; font-weight: 500;">Dosis:</span>
+                            <span style="font-size: 13px; color: #111827;">{{ receta['dosis'] }}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 12px; color: #6b7280; font-weight: 500;">Frecuencia:</span>
+                            <span style="font-size: 13px; color: #111827;">{{ receta['frecuencia'] }}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 12px; color: #6b7280; font-weight: 500;">Duración:</span>
+                            <span style="font-size: 13px; color: #111827;">{{ receta['duracion'] }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if receta['indicaciones'] %}
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #bfdbfe;">
+                        <div style="font-size: 12px; color: #6b7280; font-weight: 500; margin-bottom: 4px;">Indicaciones:</div>
+                        <div style="font-size: 13px; color: #374151; line-height: 1.5;">
+                            {{ receta['indicaciones'] }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if session.get('role') == 'doctor' %}
+                <div style="display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
+                    <a href="{{ url_for('editar_receta', id=receta['id']) }}" class="button-secondary" style="padding: 8px 14px; font-size: 13px; text-decoration: none; height: 36px; display: inline-flex; align-items: center; justify-content: center; min-width: 90px;">
+                        Editar
+                    </a>
+                    <form method="POST" action="{{ url_for('eliminar_receta', id=receta['id']) }}" style="display: inline-block; margin: 0;" onsubmit="return confirm('¿Estás seguro de eliminar esta receta? Esta acción no se puede deshacer.');">
+                        <button type="submit" class="button-secondary" style="padding: 8px 14px; font-size: 13px; background: #fee2e2; color: #991b1b; border-color: #fca5a5; height: 36px; display: inline-flex; align-items: center; justify-content: center; min-width: 90px;">
+                            Eliminar
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+let pacientesData = [];
+
+// Cargar datos de pacientes al inicio
+document.addEventListener('DOMContentLoaded', function() {
+    const datalist = document.getElementById('pacientesList');
+    if (datalist) {
+        const options = datalist.querySelectorAll('option');
+        
+        options.forEach(option => {
+            pacientesData.push({
+                id: option.getAttribute('data-id'),
+                nombre: option.value
+            });
+        });
+    }
+});
+
+// Funciones para paciente
+function mostrarPacientes() {
+    document.getElementById('pacientesDropdown').style.display = 'block';
+}
+
+function filtrarPacientes() {
+    const searchInput = document.getElementById('pacienteSearchInput');
+    const dropdown = document.getElementById('pacientesDropdown');
+    const query = searchInput.value.toLowerCase();
+    const options = dropdown.querySelectorAll('.paciente-option');
+    
+    const optionsWithScore = [];
+    
+    options.forEach(option => {
+        const nombre = option.getAttribute('data-nombre').toLowerCase();
+        let score = 0;
+        
+        if (nombre === query) {
+            score = 1000;
+        } else if (nombre.startsWith(query)) {
+            score = 500;
+        } else if (nombre.includes(query)) {
+            score = 100;
+        }
+        
+        optionsWithScore.push({ element: option, score: score });
+    });
+    
+    optionsWithScore.sort((a, b) => b.score - a.score);
+    
+    optionsWithScore.forEach((item, index) => {
+        dropdown.appendChild(item.element);
+        item.element.style.display = 'block';
+        
+        if (query !== '' && item.score > 0) {
+            item.element.style.backgroundColor = index === 0 ? '#dbeafe' : '#f9fafb';
+            item.element.style.fontWeight = index === 0 ? '600' : 'normal';
+        } else {
+            item.element.style.backgroundColor = '';
+            item.element.style.fontWeight = 'normal';
+        }
+    });
+    
+    dropdown.style.display = 'block';
+}
+
+function seleccionarPaciente(id, nombre) {
+    document.getElementById('pacienteIdHidden').value = id;
+    document.getElementById('pacienteSearchInput').value = nombre;
+    document.getElementById('pacientesDropdown').style.display = 'none';
+}
+
+// Funciones para medicamento
+function mostrarMedicamentos() {
+    document.getElementById('medicamentosDropdown').style.display = 'block';
+}
+
+function filtrarMedicamentos() {
+    const searchInput = document.getElementById('medicamentoSearchInput');
+    const dropdown = document.getElementById('medicamentosDropdown');
+    const query = searchInput.value.toLowerCase();
+    const options = dropdown.querySelectorAll('.medicamento-option');
+    
+    const optionsWithScore = [];
+    
+    options.forEach(option => {
+        const text = option.getAttribute('data-value').toLowerCase();
+        let score = 0;
+        
+        if (text === query) {
+            score = 1000;
+        } else if (text.startsWith(query)) {
+            score = 500;
+        } else if (text.includes(query)) {
+            score = 100;
+        }
+        
+        optionsWithScore.push({ element: option, score: score });
+    });
+    
+    optionsWithScore.sort((a, b) => b.score - a.score);
+    
+    optionsWithScore.forEach((item, index) => {
+        dropdown.appendChild(item.element);
+        item.element.style.display = 'block';
+        
+        if (query !== '' && item.score > 0) {
+            item.element.style.backgroundColor = index === 0 ? '#dbeafe' : '#f9fafb';
+            item.element.style.fontWeight = index === 0 ? '600' : 'normal';
+        } else {
+            item.element.style.backgroundColor = '';
+            item.element.style.fontWeight = 'normal';
+        }
+    });
+    
+    dropdown.style.display = 'block';
+}
+
+function seleccionarMedicamento(medicamento) {
+    document.getElementById('medicamentoInput').value = medicamento;
+    document.getElementById('medicamentoSearchInput').value = medicamento;
+    document.getElementById('medicamentosDropdown').style.display = 'none';
+}
+
+// Funciones para frecuencia
+function mostrarFrecuencias() {
+    document.getElementById('frecuenciasDropdown').style.display = 'block';
+}
+
+function filtrarFrecuencias() {
+    const searchInput = document.getElementById('frecuenciaSearchInput');
+    const dropdown = document.getElementById('frecuenciasDropdown');
+    const query = searchInput.value.toLowerCase();
+    const options = dropdown.querySelectorAll('.frecuencia-option');
+    
+    options.forEach(option => {
+        const text = option.textContent.toLowerCase();
+        if (text.includes(query)) {
+            option.style.display = 'block';
+        } else {
+            option.style.display = 'none';
+        }
+    });
+    
+    dropdown.style.display = 'block';
+}
+
+function seleccionarFrecuencia(frecuencia) {
+    document.getElementById('frecuenciaInput').value = frecuencia;
+    document.getElementById('frecuenciaSearchInput').value = frecuencia;
+    document.getElementById('frecuenciasDropdown').style.display = 'none';
+}
+
+// Funciones para duración
+function mostrarDuraciones() {
+    document.getElementById('duracionesDropdown').style.display = 'block';
+}
+
+function filtrarDuraciones() {
+    const searchInput = document.getElementById('duracionSearchInput');
+    const dropdown = document.getElementById('duracionesDropdown');
+    const query = searchInput.value.toLowerCase();
+    const options = dropdown.querySelectorAll('.duracion-option');
+    
+    options.forEach(option => {
+        const text = option.textContent.toLowerCase();
+        if (text.includes(query)) {
+            option.style.display = 'block';
+        } else {
+            option.style.display = 'none';
+        }
+    });
+    
+    dropdown.style.display = 'block';
+}
+
+function seleccionarDuracion(duracion) {
+    document.getElementById('duracionInput').value = duracion;
+    document.getElementById('duracionSearchInput').value = duracion;
+    document.getElementById('duracionesDropdown').style.display = 'none';
+}
+
+// Cerrar dropdowns al hacer click fuera
+document.addEventListener('click', function(e) {
+    const pacienteDropdown = document.getElementById('pacientesDropdown');
+    const pacienteInput = document.getElementById('pacienteSearchInput');
+    const medicamentoDropdown = document.getElementById('medicamentosDropdown');
+    const medicamentoInput = document.getElementById('medicamentoSearchInput');
+    const frecuenciaDropdown = document.getElementById('frecuenciasDropdown');
+    const frecuenciaInput = document.getElementById('frecuenciaSearchInput');
+    const duracionDropdown = document.getElementById('duracionesDropdown');
+    const duracionInput = document.getElementById('duracionSearchInput');
+    
+    if (pacienteDropdown && e.target !== pacienteDropdown && e.target !== pacienteInput && !pacienteDropdown.contains(e.target)) {
+        pacienteDropdown.style.display = 'none';
+    }
+    
+    if (medicamentoDropdown && e.target !== medicamentoDropdown && e.target !== medicamentoInput && !medicamentoDropdown.contains(e.target)) {
+        medicamentoDropdown.style.display = 'none';
+    }
+    
+    if (frecuenciaDropdown && e.target !== frecuenciaDropdown && e.target !== frecuenciaInput && !frecuenciaDropdown.contains(e.target)) {
+        frecuenciaDropdown.style.display = 'none';
+    }
+    
+    if (duracionDropdown && e.target !== duracionDropdown && e.target !== duracionInput && !duracionDropdown.contains(e.target)) {
+        duracionDropdown.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Agregar Doctor - Medicare{% endblock %}
+
+{% block navigation %}
+<a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+<a href="{{ url_for('admin_usuarios') }}" class="nav-link">Usuarios</a>
+<a href="{{ url_for('agregar_doctor') }}" class="nav-link">Agregar Doctor</a>
+<a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+<a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+<a href="{{ url_for('configuracion') }}" class="nav-link">Configuración</a>
+<a href="{{ url_for('logout') }}" class="nav-link">Salir</a>
+{% endblock %}
+
+{% block page_title %}Agregar Nuevo Doctor{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <h3>Registrar nuevo doctor</h3>
+    <p class="note">Completa el formulario para agregar un nuevo médico al sistema.</p>
+    
+    <form method="POST" action="{{ url_for('agregar_doctor') }}" id="formAgregarDoctor">
+        <div class="form-grid">
+            <div>
+                <label class="label">Sexo *</label>
+                <select class="input" name="sexo" id="sexoSelect" required onchange="actualizarPrefijo()">
+                    <option value="">Seleccionar</option>
+                    <option value="M">Masculino</option>
+                    <option value="F">Femenino</option>
+                </select>
+            </div>
+            <div>
+                <label class="label">Nombre completo (sin prefijo) *</label>
+                <input class="input" type="text" name="nombre_sin_prefijo" id="nombreSinPrefijo" placeholder="Nombre Apellido" required onkeyup="actualizarPrefijo()" />
+                <input type="hidden" name="nombre" id="nombreCompleto" />
+            </div>
+            <div>
+                <label class="label">Correo electrónico *</label>
+                <input class="input" type="email" name="email" placeholder="doctor@medicare.com" required />
+            </div>
+            <div>
+                <label class="label">Nombre de usuario *</label>
+                <input class="input" type="text" name="username" placeholder="drnombre" required />
+            </div>
+            <div>
+                <label class="label">Contraseña *</label>
+                <input class="input" type="password" name="password" placeholder="Mínimo 6 caracteres" required />
+            </div>
+            <div>
+                <label class="label">Especialidad *</label>
+                <input class="input" type="text" name="especialidad" id="especialidadInput" list="especialidadesList" placeholder=" Buscar o seleccionar especialidad..." required />
+                <datalist id="especialidadesList">
+                    {% for esp in especialidades %}
+                    <option value="{{ esp }}">
+                    {% endfor %}
+                </datalist>
+            </div>
+            <div>
+                <label class="label">Teléfono *</label>
+                <input class="input" type="tel" name="telefono" placeholder="809-555-0000" required />
+            </div>
+            <div>
+                <label class="label">Vista previa del nombre</label>
+                <div class="input" id="vistaPrevia" style="background-color: #f3f4f6; font-weight: bold;">
+                    Selecciona sexo y escribe nombre...
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="button-primary">Registrar doctor</button>
+            <a href="{{ url_for('admin_usuarios') }}" class="button-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<script>
+function actualizarPrefijo() {
+    const sexo = document.getElementById('sexoSelect').value;
+    const nombreSinPrefijo = document.getElementById('nombreSinPrefijo').value;
+    const nombreCompleto = document.getElementById('nombreCompleto');
+    const vistaPrevia = document.getElementById('vistaPrevia');
+    
+    if (!sexo || !nombreSinPrefijo) {
+        vistaPrevia.textContent = 'Selecciona sexo y escribe nombre...';
+        nombreCompleto.value = '';
+        return;
+    }
+    
+    const prefijo = sexo === 'M' ? 'Dr.' : 'Dra.';
+    const nombreFinal = `${prefijo} ${nombreSinPrefijo}`;
+    
+    nombreCompleto.value = nombreFinal;
+    vistaPrevia.textContent = nombreFinal;
+}
+
+// Validar antes de enviar
+document.getElementById('formAgregarDoctor').addEventListener('submit', function(e) {
+    const nombreCompleto = document.getElementById('nombreCompleto').value;
+    if (!nombreCompleto) {
+        e.preventDefault();
+        alert('Por favor completa el sexo y el nombre');
+    }
+});
+</script>
+
+<div class="card" style="margin-top: 20px;">
+    <h3>Información importante</h3>
+    <div class="note">
+        <p style="margin: 8px 0;">• El doctor podrá acceder con su usuario y contraseña inmediatamente.</p>
+        <p style="margin: 8px 0;">• Tendrá acceso completo a citas, recetas y urgencias.</p>
+        <p style="margin: 8px 0;">• Podrá ver todos los pacientes del sistema.</p>
+        <p style="margin: 8px 0;">• No podrá crear otros usuarios doctores (solo el admin).</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Gestionar Usuarios - Medicare{% endblock %}
+
+{% block navigation %}
+<a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+<a href="{{ url_for('admin_usuarios') }}" class="nav-link">Usuarios</a>
+<a href="{{ url_for('agregar_doctor') }}" class="nav-link">Agregar Doctor</a>
+<a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+<a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+<a href="{{ url_for('configuracion') }}" class="nav-link">Configuración</a>
+<a href="{{ url_for('logout') }}" class="nav-link">Salir</a>
+{% endblock %}
+
+{% block page_title %}Gestionar Usuarios{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h3>Listado de usuarios del sistema</h3>
+    <p class="note">Total de usuarios: {{ usuarios|length }}</p>
+    
+    <div style="overflow-x: auto; margin-top: 16px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: var(--bg); text-align: left;">
+                    <th style="padding: 12px; border-bottom: 2px solid var(--border);">ID</th>
+                    <th style="padding: 12px; border-bottom: 2px solid var(--border);">Nombre</th>
+                    <th style="padding: 12px; border-bottom: 2px solid var(--border);">Email</th>
+                    <th style="padding: 12px; border-bottom: 2px solid var(--border);">Usuario</th>
+                    <th style="padding: 12px; border-bottom: 2px solid var(--border);">Rol</th>
+                    <th style="padding: 12px; border-bottom: 2px solid var(--border);">Especialidad</th>
+                    <th style="padding: 12px; border-bottom: 2px solid var(--border);">Estado</th>
+                    <th style="padding: 12px; border-bottom: 2px solid var(--border);">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 12px;">{{ usuario['id'] }}</td>
+                    <td style="padding: 12px;"><strong>{{ usuario['nombre'] }}</strong></td>
+                    <td style="padding: 12px;">{{ usuario['email'] }}</td>
+                    <td style="padding: 12px;">{{ usuario['username'] }}</td>
+                    <td style="padding: 12px;">
+                        <span class="badge-pill" style="
+                            background: {% if usuario['role'] == 'admin' %}#fef3c7{% elif usuario['role'] == 'doctor' %}#dbeafe{% else %}#e0e7ff{% endif %};
+                            color: {% if usuario['role'] == 'admin' %}#92400e{% elif usuario['role'] == 'doctor' %}#1e40af{% else %}#3730a3{% endif %};
+                        ">
+                            {{ usuario['role']|capitalize }}
+                        </span>
+                    </td>
+                    <td style="padding: 12px;">{{ usuario['especialidad'] or '-' }}</td>
+                    <td style="padding: 12px;">
+                        <span class="badge-pill" style="
+                            background: {% if usuario['estado'] == 'activo' %}#d1fae5{% else %}#fee2e2{% endif %};
+                            color: {% if usuario['estado'] == 'activo' %}#065f46{% else %}#991b1b{% endif %};
+                        ">
+                            {{ usuario['estado']|capitalize }}
+                        </span>
+                    </td>
+                    <td style="padding: 12px;">
+                        {% if usuario['username'] != 'admin' %}
+                        <form method="POST" action="{{ url_for('eliminar_usuario', id=usuario['id']) }}" style="display: inline;" onsubmit="return confirm('¿Estás seguro de eliminar a {{ usuario['nombre'] }}? Esta acción no se puede deshacer.');">
+                            <button type="submit" style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;">
+                                 Eliminar
+                            </button>
+                        </form>
+                        {% else %}
+                        <span style="color: var(--text-muted); font-size: 13px;">Protegido</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

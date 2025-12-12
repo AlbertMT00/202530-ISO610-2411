@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Receta - Medicare{% endblock %}
+
+{% block navigation %}
+<a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+<a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+<a href="{{ url_for('doctores') }}" class="nav-link">Doctores</a>
+<a href="{{ url_for('recetas') }}" class="nav-link">Recetas</a>
+<a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+<a href="{{ url_for('configuracion') }}" class="nav-link">Configuración</a>
+<a href="{{ url_for('logout') }}" class="nav-link">Salir</a>
+{% endblock %}
+
+{% block page_title %}Editar Receta{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="form-card">
+        <h3>Editar receta para {{ receta['paciente_nombre'] }}</h3>
+        
+        <form method="POST">
+            <div class="form-grid">
+                <div>
+                    <label class="label">Medicamento *</label>
+                    <input class="input" type="text" name="medicamento" value="{{ receta['medicamento'] }}" placeholder="Escribir o seleccionar" required />
+                </div>
+                <div>
+                    <label class="label">Dosis *</label>
+                    <input class="input" type="text" name="dosis" value="{{ receta['dosis'] }}" placeholder="ej: 500 mg" required />
+                </div>
+                <div>
+                    <label class="label">Frecuencia *</label>
+                    <select class="input" name="frecuencia" required>
+                        <option value="">Seleccionar</option>
+                        <option value="Cada 4 horas" {% if receta['frecuencia'] == 'Cada 4 horas' %}selected{% endif %}>Cada 4 horas</option>
+                        <option value="Cada 6 horas" {% if receta['frecuencia'] == 'Cada 6 horas' %}selected{% endif %}>Cada 6 horas</option>
+                        <option value="Cada 8 horas" {% if receta['frecuencia'] == 'Cada 8 horas' %}selected{% endif %}>Cada 8 horas</option>
+                        <option value="Cada 12 horas" {% if receta['frecuencia'] == 'Cada 12 horas' %}selected{% endif %}>Cada 12 horas</option>
+                        <option value="3 veces al día" {% if receta['frecuencia'] == '3 veces al día' %}selected{% endif %}>3 veces al día</option>
+                        <option value="2 veces al día" {% if receta['frecuencia'] == '2 veces al día' %}selected{% endif %}>2 veces al día</option>
+                        <option value="1 vez al día" {% if receta['frecuencia'] == '1 vez al día' %}selected{% endif %}>1 vez al día</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="label">Duración *</label>
+                    <select class="input" name="duracion" required>
+                        <option value="">Seleccionar</option>
+                        <option value="3 días" {% if receta['duracion'] == '3 días' %}selected{% endif %}>3 días</option>
+                        <option value="5 días" {% if receta['duracion'] == '5 días' %}selected{% endif %}>5 días</option>
+                        <option value="7 días" {% if receta['duracion'] == '7 días' %}selected{% endif %}>7 días</option>
+                        <option value="10 días" {% if receta['duracion'] == '10 días' %}selected{% endif %}>10 días</option>
+                        <option value="14 días" {% if receta['duracion'] == '14 días' %}selected{% endif %}>14 días</option>
+                        <option value="30 días" {% if receta['duracion'] == '30 días' %}selected{% endif %}>30 días</option>
+                        <option value="90 días" {% if receta['duracion'] == '90 días' %}selected{% endif %}>90 días</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top: 16px;">
+                <label class="label">Indicaciones especiales</label>
+                <textarea class="input" name="indicaciones" rows="3" placeholder="Recomendaciones o recordatorios para el paciente">{{ receta['indicaciones'] }}</textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="button-primary">Guardar cambios</button>
+                <a href="{{ url_for('recetas') }}" class="button-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

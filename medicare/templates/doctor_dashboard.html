@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Medicare{% endblock %}
+
+{% block navigation %}
+<a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+<a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+<a href="{{ url_for('doctores') }}" class="nav-link">Doctores</a>
+<a href="{{ url_for('recetas') }}" class="nav-link">Recetas</a>
+<a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+<a href="{{ url_for('configuracion') }}" class="nav-link">Configuración</a>
+<a href="{{ url_for('logout') }}" class="nav-link">Salir</a>
+{% endblock %}
+
+{% block page_title %}Inicio - Panel del Doctor{% endblock %}
+
+{% block content %}
+<!-- Selector de Estado del Doctor -->
+<div class="card" style="margin-bottom: 20px; background: linear-gradient(135deg, #667eea, #764ba2);">
+    <div style="display: flex; justify-content: space-between; align-items: center; color: white;">
+        <div>
+            <h3 style="margin: 0 0 8px 0; color: white;">Mi Estado Actual</h3>
+            <p style="margin: 0; opacity: 0.9; font-size: 14px;">Actualiza tu disponibilidad</p>
+        </div>
+        <form method="POST" action="{{ url_for('cambiar_estado_doctor') }}" style="display: flex; gap: 10px; align-items: center;">
+            <select name="estado" class="input" style="width: auto; min-width: 180px;" onchange="this.form.submit()">
+                <option value="disponible" {% if session.get('estado_doctor') == 'disponible' %}selected{% endif %}> Disponible</option>
+                <option value="ocupado" {% if session.get('estado_doctor') == 'ocupado' %}selected{% endif %}> Ocupado</option>
+                <option value="descanso" {% if session.get('estado_doctor') == 'descanso' %}selected{% endif %}> En descanso</option>
+                <option value="fuera_servicio" {% if session.get('estado_doctor') == 'fuera_servicio' %}selected{% endif %}> Fuera de servicio</option>
+            </select>
+        </form>
+    </div>
+</div>
+
+<div class="card-grid">
+    <div class="card">
+        <h3>Citas de hoy</h3>
+        <p class="note">Consultas programadas</p>
+        <div class="stat-number" id="citasHoy">-</div>
+    </div>
+    <div class="card">
+        <h3>Recetas emitidas</h3>
+        <p class="note">Total este mes</p>
+        <div class="stat-number" id="recetasPendientes">-</div>
+    </div>
+    <div class="card">
+        <h3>Urgencias</h3>
+        <p class="note">Alertas pendientes</p>
+        <div class="stat-number" style="color: var(--danger);" id="urgencias">-</div>
+    </div>
+</div>
+
+<div style="margin-top: 24px;">
+    <h3 style="margin-bottom: 14px;">Accesos rápidos</h3>
+    <div class="card">
+        <div class="list">
+            <a href="{{ url_for('citas') }}" class="list-item" style="text-decoration: none; color: inherit;">
+                <div>
+                    <strong>Nueva cita</strong>
+                    <small class="note">Agenda una consulta para un paciente</small>
+                </div>
+            </a>
+            <a href="{{ url_for('recetas') }}" class="list-item" style="text-decoration: none; color: inherit;">
+                <div>
+                    <strong>Crear receta</strong>
+                    <small class="note">Emite una nueva receta médica</small>
+                </div>
+            </a>
+            <a href="{{ url_for('urgencias') }}" class="list-item" style="text-decoration: none; color: inherit;">
+                <div>
+                    <strong>Ver urgencias</strong>
+                    <small class="note">Revisa las alertas pendientes</small>
+                </div>
+            </a>
+            <a href="{{ url_for('citas') }}" class="list-item" style="text-decoration: none; color: inherit;">
+                <div>
+                    <strong>Historial del día</strong>
+                    <small class="note">Revisa las citas completadas hoy</small>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="split" style="margin-top: 24px;">
+    <div class="card">
+        <h3>Especialidad</h3>
+        <div class="badge" style="margin-top: 10px; width: fit-content;">{{ session.get('especialidad', 'Medicina General') }}</div>
+        <p class="note" style="margin-top: 10px;">Consultas especializadas en tu área de práctica médica.</p>
+    </div>
+    
+    <div class="card">
+        <h3>Información de contacto</h3>
+        <div class="list">
+            <div class="list-item">
+                <strong>Clínica</strong>
+                <span>Clínica Medicare</span>
+            </div>
+            <div class="list-item">
+                <strong>Dirección</strong>
+                <span>Av. Máximo Gómez, DN</span>
+            </div>
+            <div class="list-item">
+                <strong>Soporte</strong>
+                <span>soporte@medicare.com</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Cargar estadísticas
+fetch('/api/stats')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('citasHoy').textContent = data.citas_hoy || 0;
+        document.getElementById('recetasPendientes').textContent = data.recetas_pendientes || 0;
+        document.getElementById('urgencias').textContent = data.urgencias || 0;
+    });
+</script>
+{% endblock %}
