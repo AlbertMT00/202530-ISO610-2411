@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Doctores - Medicare{% endblock %}
+
+{% block navigation %}
+<a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+<a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+<a href="{{ url_for('doctores') }}" class="nav-link">Doctores</a>
+<a href="{{ url_for('recetas') }}" class="nav-link">Recetas</a>
+<a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+<a href="{{ url_for('configuracion') }}" class="nav-link">Configuración</a>
+<a href="{{ url_for('logout') }}" class="nav-link">Salir</a>
+{% endblock %}
+
+{% block page_title %}Nuestros Doctores{% endblock %}
+
+{% block content %}
+<div class="doctors-header">
+    <h3>Explora nuestros doctores</h3>
+    <p class="note">Encuentra el especialista que necesitas.</p>
+</div>
+
+<div class="split">
+    <div class="card">
+        <div class="filters">
+            <input
+                id="doctorSearch"
+                type="text"
+                class="input search-input"
+                placeholder="Buscar por nombre..."
+                onkeyup="filtrarDoctores()"
+            />
+            
+            <select id="doctorSpecialtyFilter" class="input filter-select" onchange="filtrarDoctores()">
+                <option value="">Todas las especialidades</option>
+                {% for esp in especialidades %}
+                <option value="{{ esp }}">{{ esp }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div id="doctorsList" class="list">
+            {% for doctor in doctores %}
+            <div class="doctor-card" 
+                 data-nombre="{{ doctor['nombre']|lower }}" 
+                 data-especialidad="{{ doctor['especialidad'] }}"
+                 onclick="mostrarPerfil({{ doctor['id'] }}, '{{ doctor['nombre'] }}', '{{ doctor['especialidad'] }}', '{{ doctor['email'] }}', '{{ doctor['telefono'] }}', '{{ doctor['estado_doctor'] or 'disponible' }}')">
+                <div class="doctor-main">
+                    <div class="doctor-avatar">
+                        {{ doctor['nombre'][0]|upper }}{{ doctor['nombre'].split()[-1][0]|upper if doctor['nombre'].split()|length > 1 else '' }}
+                    </div>
+                    <div class="doctor-info">
+                        <div class="doctor-name">{{ doctor['nombre'] }}</div>
+                        <div class="doctor-specialty">{{ doctor['especialidad'] }}</div>
+                    </div>
+                </div>
+                <div class="doctor-status">
+                    <div class="status-row">
+                        {% set estado = doctor['estado_doctor'] or 'disponible' %}
+                        <span class="status-dot 
+                            {% if estado == 'disponible' %}status-available
+                            {% elif estado == 'ocupado' %}status-busy
+                            {% elif estado == 'descanso' %}status-break
+                            {% else %}status-offline{% endif %}"></span>
+                        <span class="status-label">
+                            {% if estado == 'disponible' %}Disponible
+                            {% elif estado == 'ocupado' %}Ocupado
+                            {% elif estado == 'descanso' %}En descanso
+                            {% else %}Fuera de servicio{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card" id="doctorProfile" style="position: sticky; top: 20px; align-self: flex-start; max-height: calc(100vh - 40px); overflow-y: auto;">
+        <h3>Selecciona un doctor</h3>
+        <p class="note">
+            El perfil detallado aparecerá aquí cuando elijas un doctor de la lista.
+        </p>
+    </div>
+</div>
+
+<script>
+function filtrarDoctores() {
+    const busqueda = document.getElementById('doctorSearch').value.toLowerCase();
+    const especialidad = document.getElementById('doctorSpecialtyFilter').value;
+    const doctores = document.querySelectorAll('.doctor-card');
+    
+    doctores.forEach(doctor => {
+        const nombre = doctor.getAttribute('data-nombre');
+        const esp = doctor.getAttribute('data-especialidad');
+        
+        const coincideNombre = nombre.includes(busqueda);
+        const coincideEspecialidad = !especialidad || esp === especialidad;
+        
+        if (coincideNombre && coincideEspecialidad) {
+            doctor.style.display = 'flex';
+        } else {
+            doctor.style.display = 'none';
+        }
+    });
+}
+
+function mostrarPerfil(id, nombre, especialidad, email, telefono, estado) {
+    // Marcar como activo
+    document.querySelectorAll('.doctor-card').forEach(card => {
+        card.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+    
+    // Determinar clase y texto del estado
+    let estadoClase = 'status-available';
+    let estadoTexto = 'Disponible';
+    
+    if (estado === 'ocupado') {
+        estadoClase = 'status-busy';
+        estadoTexto = 'Ocupado';
+    } else if (estado === 'descanso') {
+        estadoClase = 'status-break';
+        estadoTexto = 'En descanso';
+    } else if (estado === 'fuera_servicio') {
+        estadoClase = 'status-offline';
+        estadoTexto = 'Fuera de servicio';
+    }
+    
+    // Mostrar perfil
+    const profileDiv = document.getElementById('doctorProfile');
+    profileDiv.innerHTML = `
+        <div class="profile-header">
+            <div class="profile-main">
+                <div class="doctor-avatar" style="width: 64px; height: 64px; font-size: 24px;">
+                    ${nombre[0].toUpperCase()}${nombre.split(' ').length > 1 ? nombre.split(' ')[nombre.split(' ').length-1][0].toUpperCase() : ''}
+                </div>
+                <div class="profile-meta">
+                    <div class="profile-name">${nombre}</div>
+                    <div class="profile-specialty">${especialidad}</div>
+                    <div class="profile-contact"> ${email}</div>
+                    <div class="profile-contact"> ${telefono || 'No disponible'}</div>
+                </div>
+            </div>
+            <div class="profile-status">
+                <div class="status-row">
+                    <span class="status-dot ${estadoClase}"></span>
+                    <span class="status-label">${estadoTexto}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-bio">
+            Especialista en ${especialidad} con amplia experiencia en el diagnóstico y tratamiento de diversas condiciones médicas.
+        </div>
+        
+        <div class="profile-extra">
+            <span><strong>Horario:</strong> Lunes a Viernes, 8:00 AM - 5:00 PM</span>
+            <span><strong>Ubicación:</strong> Clínica Medicare, Av. Máximo Gómez</span>
+            <span><strong>Años de experiencia:</strong> 10+ años</span>
+        </div>
+        
+        <div class="profile-actions">
+            <a href="${"{{ url_for('citas') }}" + '?doctor_id=' + id}" class="button-primary">Agendar cita</a>
+            <a href="mailto:${email}" class="button-secondary">Contactar</a>
+        </div>
+    `;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,638 @@
+{% extends "base.html" %}
+
+{% block title %}Citas - Medicare{% endblock %}
+
+{% block navigation %}
+{% if session.get('role') == 'admin' %}
+    <a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+    <a href="{{ url_for('admin_usuarios') }}" class="nav-link">Usuarios</a>
+    <a href="{{ url_for('agregar_doctor') }}" class="nav-link">Agregar Doctor</a>
+    <a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+    <a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+{% else %}
+    <a href="{{ url_for('dashboard') }}" class="nav-link">Inicio</a>
+    <a href="{{ url_for('citas') }}" class="nav-link">Citas</a>
+    <a href="{{ url_for('doctores') }}" class="nav-link">Doctores</a>
+    <a href="{{ url_for('recetas') }}" class="nav-link">Recetas</a>
+    <a href="{{ url_for('urgencias') }}" class="nav-link">Urgencias</a>
+{% endif %}
+<a href="{{ url_for('configuracion') }}" class="nav-link">Configuración</a>
+<a href="{{ url_for('logout') }}" class="nav-link">Salir</a>
+{% endblock %}
+
+{% block page_title %}Citas Médicas{% endblock %}
+
+{% block content %}
+<div class="split">
+    <div class="form-card" style="position: sticky; top: 20px; align-self: flex-start;">
+        <h3>{% if session.get('role') == 'doctor' %}Agendar cita para paciente{% else %}Agendar nueva cita{% endif %}</h3>
+        
+        <form method="POST" action="{{ url_for('crear_cita') }}" id="citaForm">
+            <div class="form-grid form-grid-appointments">
+                {% if session.get('role') == 'doctor' %}
+                <div class="field field-patient">
+                    <label class="label">Paciente *</label>
+                    <div style="position: relative;">
+                        <input class="input" type="text" id="pacienteSearchInputDoctor" placeholder="Buscar paciente..." oninput="filtrarPacientesDoctor()" onfocus="mostrarPacientesDoctor()" />
+                        <input type="hidden" name="paciente_id" id="pacienteIdHiddenDoctor" required />
+                        <div id="pacientesDropdownDoctor" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 8px; max-height: 300px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            {% for paciente in pacientes %}
+                            <div class="paciente-option-doctor" data-id="{{ paciente['id'] }}" data-nombre="{{ paciente['nombre'] }}" onclick="seleccionarPacienteDoctor({{ paciente['id'] }}, '{{ paciente['nombre'] }}')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">
+                                {{ paciente['nombre'] }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="field field-patient">
+                    <label class="label">Paciente</label>
+                    <input class="input" type="text" value="{{ session.get('nombre') }}" disabled />
+                </div>
+                {% endif %}
+
+                <div class="field field-service">
+                    <label class="label">Especialidad *</label>
+                    <div style="position: relative;">
+                        <input class="input" type="text" id="especialidadSearchInput" placeholder=" Buscar especialidad..." oninput="filtrarEspecialidades()" onfocus="mostrarEspecialidades()" onkeyup="checkEspecialidadBorrada()" />
+                        <input type="hidden" name="especialidad" id="especialidadInput" required />
+                        <div id="especialidadesDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 8px; max-height: 300px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            {% for esp in especialidades %}
+                            <div class="especialidad-option" data-value="{{ esp }}" onclick="seleccionarEspecialidad('{{ esp }}')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">
+                                {{ esp }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field field-doctor">
+                    <label class="label">Doctor *</label>
+                    <div style="position: relative;">
+                        <input class="input" type="text" id="doctorSearchInput" placeholder=" Buscar doctor..." oninput="filtrarDoctores()" onfocus="mostrarDoctores()" />
+                        <input type="hidden" name="doctor_id" id="doctorSelect" required />
+                        <div id="doctoresDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 8px; max-height: 300px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            {% for doctor in doctores %}
+                            <div class="doctor-option" 
+                                 data-id="{{ doctor['id'] }}" 
+                                 data-nombre="{{ doctor['nombre'] }}" 
+                                 data-especialidad="{{ doctor['especialidad'] }}" 
+                                 onclick="seleccionarDoctor({{ doctor['id'] }}, '{{ doctor['nombre'] }}', '{{ doctor['especialidad'] }}')" 
+                                 style="padding: 10px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" title="">
+                                <div style="font-weight: 600;">{{ doctor['nombre'] }}</div>
+                                <div style="font-size: 12px; color: #6b7280;">{{ doctor['especialidad'] }}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field field-date">
+                    <label class="label">Fecha *</label>
+                    <input class="input" type="date" name="fecha" id="fechaInput" required onchange="verificarHorarios()" />
+                </div>
+
+                <div class="field field-time">
+                    <label class="label">Hora *</label>
+                    <select class="input" name="hora" id="horaInput" required onchange="verificarDisponibilidad()">
+                        <option value="">Seleccionar hora</option>
+                        <option value="08:00">8:00 am - 9:00 am</option>
+                        <option value="09:00">9:00 am - 10:00 am</option>
+                        <option value="10:00">10:00 am - 11:00 am</option>
+                        <option value="11:00">11:00 am - 12:00 pm</option>
+                        <option value="12:00">12:00 pm - 1:00 pm</option>
+                        <option value="13:00">1:00 pm - 2:00 pm</option>
+                        <option value="14:00">2:00 pm - 3:00 pm</option>
+                        <option value="15:00">3:00 pm - 4:00 pm</option>
+                        <option value="16:00">4:00 pm - 5:00 pm</option>
+                    </select>
+                    <div id="horaAdvertenciaHorario" style="display: none; margin-top: 8px; padding: 8px 12px; background: #fef3c7; color: #92400e; border-radius: 8px; font-size: 13px;">
+                         Esta hora está fuera del horario laboral del doctor. Horario: <span id="horarioLaboral">8:00 am - 5:00 pm</span>
+                    </div>
+                    <div id="horaAdvertencia" style="display: none; margin-top: 8px; padding: 8px 12px; background: #fee2e2; color: #991b1b; border-radius: 8px; font-size: 13px;">
+                         El doctor tiene citas ya programadas en este horario. Por favor selecciona otra hora.
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 16px;">
+                <label class="label">Motivo de la consulta</label>
+                <textarea class="input" name="motivo" rows="3" placeholder="Describe el motivo de la consulta"></textarea>
+            </div>
+
+            <button type="submit" class="button-primary" id="btnConfirmar">Confirmar cita</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>{% if session.get('role') == 'doctor' %}Citas programadas{% else %}Mis próximas citas{% endif %}</h3>
+        {% if citas|length == 0 %}
+        <p class="note">No hay citas programadas.</p>
+        {% else %}
+        <div class="list">
+            {% for cita in citas %}
+            {% if cita['estado'] != 'cancelada' %}
+            <div class="list-item" style="flex-direction: column; align-items: flex-start; gap: 12px; {% if cita['fecha'] < fecha_hoy %}opacity: 0.6;{% endif %}">
+                <div style="display: flex; justify-content: space-between; width: 100%; align-items: start;">
+                    <div>
+                        <strong>{{ cita['paciente_nombre'] }}</strong>
+                        <div class="note" style="font-size: 13px; margin-top: 4px;">
+                            {{ cita['especialidad'] }} - {{ cita['doctor_nombre'] }}
+                        </div>
+                        <div class="note" style="font-size: 13px;">
+                             {{ cita['fecha'] }} a las {{ cita['hora'] }}
+                        </div>
+                        {% if cita['motivo'] %}
+                        <div class="note" style="font-size: 12px; margin-top: 4px;">
+                            Motivo: {{ cita['motivo'] }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <span class="badge-pill" style="
+                        background: {% if cita['estado'] == 'confirmada' %}#dbeafe{% elif cita['estado'] == 'completada' %}#d1fae5{% else %}#fee2e2{% endif %};
+                        color: {% if cita['estado'] == 'confirmada' %}#1e40af{% elif cita['estado'] == 'completada' %}#065f46{% else %}#991b1b{% endif %};
+                    ">
+                        {{ cita['estado']|capitalize }}
+                    </span>
+                </div>
+                
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                    {% if session.get('role') == 'doctor' and cita['estado'] == 'confirmada' %}
+                    <form method="POST" action="{{ url_for('completar_cita', id=cita['id']) }}" style="display: inline-block; margin: 0;">
+                        <button type="submit" class="button-primary" style="padding: 8px 14px; font-size: 13px; height: 36px; display: inline-flex; align-items: center; justify-content: center; min-width: 100px;">
+                             Completar
+                        </button>
+                    </form>
+                    {% endif %}
+                    
+                    {% if cita['estado'] == 'confirmada' %}
+                    <a href="{{ url_for('editar_cita', id=cita['id']) }}" class="button-secondary" style="padding: 8px 14px; font-size: 13px; text-decoration: none; height: 36px; display: inline-flex; align-items: center; justify-content: center; min-width: 100px; box-sizing: border-box;">
+                         Cambiar
+                    </a>
+                    
+                    <form method="POST" action="{{ url_for('cancelar_cita', id=cita['id']) }}" style="display: inline-block; margin: 0;" onsubmit="return confirm('¿Estás seguro de cancelar esta cita?');">
+                        <button type="submit" class="button-secondary" style="padding: 8px 14px; font-size: 13px; background: #fee2e2; color: #991b1b; height: 36px; display: inline-flex; align-items: center; justify-content: center; min-width: 100px;">
+                             Cancelar
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+let horariosOcupados = [];
+let horaInicio = '08:00';
+let horaFin = '17:00';
+let pacientesData = [];
+let especialidadesData = [];
+
+// Cargar datos de pacientes al inicio (para doctores)
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar especialidades
+    const especialidadesOptions = document.querySelectorAll('.especialidad-option');
+    especialidadesOptions.forEach(option => {
+        especialidadesData.push(option.getAttribute('data-value'));
+    });
+    
+    // Cargar datos de pacientes si es doctor
+    const datalistPacientes = document.getElementById('pacientesListDoctor');
+    if (datalistPacientes) {
+        const optionsPacientes = datalistPacientes.querySelectorAll('option');
+        optionsPacientes.forEach(option => {
+            pacientesData.push({
+                id: option.getAttribute('data-id'),
+                nombre: option.value
+            });
+        });
+    }
+    
+    // Establecer fecha de hoy por defecto
+    const fechaInput = document.getElementById('fechaInput');
+    const today = new Date().toISOString().split('T')[0];
+    fechaInput.value = today;
+    fechaInput.min = today;
+    
+    // Si hay parámetros en la URL (venimos de "Agendar cita" del perfil del doctor)
+    const urlParams = new URLSearchParams(window.location.search);
+    const doctorId = urlParams.get('doctor_id');
+    
+    if (doctorId) {
+        const doctorSelectHidden = document.getElementById('doctorSelect');
+        const doctorSearchInput = document.getElementById('doctorSearchInput');
+        const especialidadInput = document.getElementById('especialidadInput');
+        const especialidadSearchInput = document.getElementById('especialidadSearchInput');
+        const doctoresDropdown = document.getElementById('doctoresDropdown');
+        
+        // Buscar el doctor en el dropdown
+        const doctorOptions = doctoresDropdown.querySelectorAll('.doctor-option');
+        for (let option of doctorOptions) {
+            if (option.getAttribute('data-id') === doctorId) {
+                const nombre = option.getAttribute('data-nombre');
+                const especialidad = option.getAttribute('data-especialidad');
+                
+                // Llenar campos
+                doctorSelectHidden.value = doctorId;
+                doctorSearchInput.value = nombre;
+                especialidadInput.value = especialidad;
+                especialidadSearchInput.value = especialidad;
+                
+                verificarHorarios();
+                break;
+            }
+        }
+    }
+    
+    // Cerrar dropdowns al hacer click fuera
+    document.addEventListener('click', function(e) {
+        const especialidadesDropdown = document.getElementById('especialidadesDropdown');
+        const especialidadSearchInput = document.getElementById('especialidadSearchInput');
+        const doctoresDropdown = document.getElementById('doctoresDropdown');
+        const doctorSearchInput = document.getElementById('doctorSearchInput');
+        
+        // Cerrar dropdown de especialidades
+        if (e.target !== especialidadesDropdown && e.target !== especialidadSearchInput && !especialidadesDropdown.contains(e.target)) {
+            especialidadesDropdown.style.display = 'none';
+        }
+        
+        // Cerrar dropdown de doctores
+        if (e.target !== doctoresDropdown && e.target !== doctorSearchInput && !doctoresDropdown.contains(e.target)) {
+            doctoresDropdown.style.display = 'none';
+        }
+        
+        // Cerrar dropdown de pacientes (doctor)
+        const pacientesDropdownDoctor = document.getElementById('pacientesDropdownDoctor');
+        const pacienteSearchInputDoctor = document.getElementById('pacienteSearchInputDoctor');
+        if (pacientesDropdownDoctor && e.target !== pacientesDropdownDoctor && e.target !== pacienteSearchInputDoctor && !pacientesDropdownDoctor.contains(e.target)) {
+            pacientesDropdownDoctor.style.display = 'none';
+        }
+    });
+});
+
+// Mostrar dropdown de especialidades
+function mostrarEspecialidades() {
+    const dropdown = document.getElementById('especialidadesDropdown');
+    dropdown.style.display = 'block';
+    filtrarEspecialidades();
+}
+
+// Filtrar especialidades con búsqueda inteligente
+function filtrarEspecialidades() {
+    const searchInput = document.getElementById('especialidadSearchInput');
+    const dropdown = document.getElementById('especialidadesDropdown');
+    const query = searchInput.value.toLowerCase();
+    const options = dropdown.querySelectorAll('.especialidad-option');
+    
+    // Crear array con opciones y su score de coincidencia
+    const optionsWithScore = [];
+    
+    options.forEach(option => {
+        const text = option.textContent.toLowerCase();
+        let score = 0;
+        
+        if (text === query) {
+            score = 1000; // Coincidencia exacta
+        } else if (text.startsWith(query)) {
+            score = 500; // Empieza con la búsqueda
+        } else if (text.includes(query)) {
+            score = 100; // Contiene la búsqueda
+        } else {
+            score = 0; // No coincide
+        }
+        
+        optionsWithScore.push({ element: option, score: score, text: text });
+    });
+    
+    // Ordenar por score (mayor a menor)
+    optionsWithScore.sort((a, b) => b.score - a.score);
+    
+    // Reordenar elementos en el DOM y mostrar/ocultar
+    optionsWithScore.forEach((item, index) => {
+        dropdown.appendChild(item.element);
+        
+        // Mostrar todos, pero destacar los que coinciden
+        if (query === '' || item.score > 0) {
+            item.element.style.display = 'block';
+            // Destacar coincidencias
+            if (item.score >= 100) {
+                item.element.style.backgroundColor = index === 0 ? '#dbeafe' : '#f9fafb';
+                item.element.style.fontWeight = index === 0 ? '600' : 'normal';
+            } else {
+                item.element.style.backgroundColor = '';
+                item.element.style.fontWeight = 'normal';
+            }
+        } else {
+            item.element.style.display = 'block'; // Mostrar todos
+            item.element.style.backgroundColor = '';
+            item.element.style.fontWeight = 'normal';
+        }
+    });
+    
+    dropdown.style.display = 'block';
+}
+
+// Seleccionar especialidad
+function seleccionarEspecialidad(especialidad) {
+    document.getElementById('especialidadInput').value = especialidad;
+    document.getElementById('especialidadSearchInput').value = especialidad;
+    document.getElementById('especialidadesDropdown').style.display = 'none';
+    filtrarDoctoresPorEspecialidad();
+}
+
+// Detectar cuando se borra el campo de especialidad
+function checkEspecialidadBorrada() {
+    const searchInput = document.getElementById('especialidadSearchInput');
+    const hiddenInput = document.getElementById('especialidadInput');
+    
+    // Si el campo está vacío, limpiar la especialidad seleccionada
+    if (searchInput.value.trim() === '') {
+        hiddenInput.value = '';
+        // Mostrar todos los doctores sin filtro
+        const doctorSearchInput = document.getElementById('doctorSearchInput');
+        if (doctorSearchInput) {
+            doctorSearchInput.value = '';
+            document.getElementById('doctorSelect').value = '';
+            filtrarDoctores(); // Refrescar lista sin filtro
+        }
+    }
+}
+
+// Mostrar dropdown de doctores
+function mostrarDoctores() {
+    const dropdown = document.getElementById('doctoresDropdown');
+    dropdown.style.display = 'block';
+    filtrarDoctores();
+}
+
+// Filtrar doctores con búsqueda inteligente
+function filtrarDoctores() {
+    const searchInput = document.getElementById('doctorSearchInput');
+    const dropdown = document.getElementById('doctoresDropdown');
+    const query = searchInput.value.toLowerCase();
+    const especialidadSeleccionada = document.getElementById('especialidadInput').value;
+    const options = dropdown.querySelectorAll('.doctor-option');
+    
+    // Crear array con opciones y su score de coincidencia
+    const optionsWithScore = [];
+    
+    options.forEach(option => {
+        const nombre = option.getAttribute('data-nombre').toLowerCase();
+        const especialidad = option.getAttribute('data-especialidad');
+        
+        // Si hay especialidad seleccionada, solo mostrar doctores de esa especialidad
+        if (especialidadSeleccionada && especialidad !== especialidadSeleccionada) {
+            option.style.display = 'none';
+            return;
+        }
+        
+        let score = 0;
+        
+        // Buscar en nombre
+        if (nombre === query) {
+            score = 1000; // Coincidencia exacta
+        } else if (nombre.startsWith(query)) {
+            score = 500; // Empieza con la búsqueda
+        } else if (nombre.includes(query)) {
+            score = 100; // Contiene la búsqueda
+        }
+        
+        optionsWithScore.push({ element: option, score: score, nombre: nombre });
+    });
+    
+    // Ordenar por score (mayor a menor)
+    optionsWithScore.sort((a, b) => b.score - a.score);
+    
+    // Reordenar elementos en el DOM y mostrar/ocultar
+    optionsWithScore.forEach((item, index) => {
+        dropdown.appendChild(item.element);
+        
+        // Mostrar
+        item.element.style.display = 'block';
+        
+        // Destacar coincidencias
+        if (query !== '' && item.score > 0) {
+            item.element.style.backgroundColor = index === 0 ? '#dbeafe' : '#f9fafb';
+            item.element.querySelector('div').style.fontWeight = index === 0 ? '600' : 'normal';
+        } else {
+            item.element.style.backgroundColor = '';
+            item.element.querySelector('div').style.fontWeight = 'normal';
+        }
+    });
+    
+    dropdown.style.display = 'block';
+}
+
+// Seleccionar doctor
+function seleccionarDoctor(id, nombre, especialidad) {
+    document.getElementById('doctorSelect').value = id;
+    document.getElementById('doctorSearchInput').value = nombre;
+    document.getElementById('doctoresDropdown').style.display = 'none';
+    
+    // Auto-fill especialidad
+    document.getElementById('especialidadInput').value = especialidad;
+    document.getElementById('especialidadSearchInput').value = especialidad;
+    
+    verificarHorarios();
+}
+
+// Auto-fill especialidad cuando se selecciona doctor primero (legacy)
+function autoFillEspecialidad() {
+    verificarHorarios();
+}
+
+// Funciones para paciente (doctores)
+function mostrarPacientesDoctor() {
+    document.getElementById('pacientesDropdownDoctor').style.display = 'block';
+}
+
+function filtrarPacientesDoctor() {
+    const searchInput = document.getElementById('pacienteSearchInputDoctor');
+    const dropdown = document.getElementById('pacientesDropdownDoctor');
+    const query = searchInput.value.toLowerCase();
+    const options = dropdown.querySelectorAll('.paciente-option-doctor');
+    
+    const optionsWithScore = [];
+    
+    options.forEach(option => {
+        const nombre = option.getAttribute('data-nombre').toLowerCase();
+        let score = 0;
+        
+        if (nombre === query) {
+            score = 1000;
+        } else if (nombre.startsWith(query)) {
+            score = 500;
+        } else if (nombre.includes(query)) {
+            score = 100;
+        }
+        
+        optionsWithScore.push({ element: option, score: score });
+    });
+    
+    optionsWithScore.sort((a, b) => b.score - a.score);
+    
+    optionsWithScore.forEach((item, index) => {
+        dropdown.appendChild(item.element);
+        item.element.style.display = 'block';
+        
+        if (query !== '' && item.score > 0) {
+            item.element.style.backgroundColor = index === 0 ? '#dbeafe' : '#f9fafb';
+            item.element.style.fontWeight = index === 0 ? '600' : 'normal';
+        } else {
+            item.element.style.backgroundColor = '';
+            item.element.style.fontWeight = 'normal';
+        }
+    });
+    
+    dropdown.style.display = 'block';
+}
+
+// Funciones para pacientes (vista doctor)
+function mostrarPacientesDoctor() {
+    document.getElementById('pacientesDropdownDoctor').style.display = 'block';
+}
+
+function filtrarPacientesDoctor() {
+    const searchInput = document.getElementById('pacienteSearchInputDoctor');
+    const dropdown = document.getElementById('pacientesDropdownDoctor');
+    const query = searchInput.value.toLowerCase();
+    const options = dropdown.querySelectorAll('.paciente-option-doctor');
+    
+    const optionsWithScore = [];
+    
+    options.forEach(option => {
+        const nombre = option.getAttribute('data-nombre').toLowerCase();
+        let score = 0;
+        
+        if (nombre === query) {
+            score = 1000;
+        } else if (nombre.startsWith(query)) {
+            score = 500;
+        } else if (nombre.includes(query)) {
+            score = 100;
+        }
+        
+        optionsWithScore.push({ element: option, score: score });
+    });
+    
+    optionsWithScore.sort((a, b) => b.score - a.score);
+    
+    optionsWithScore.forEach((item, index) => {
+        dropdown.appendChild(item.element);
+        item.element.style.display = 'block';
+        
+        if (query !== '' && item.score > 0) {
+            item.element.style.backgroundColor = index === 0 ? '#dbeafe' : '#f9fafb';
+            item.element.style.fontWeight = index === 0 ? '600' : 'normal';
+        } else {
+            item.element.style.backgroundColor = '';
+            item.element.style.fontWeight = 'normal';
+        }
+    });
+    
+    dropdown.style.display = 'block';
+}
+
+function seleccionarPacienteDoctor(id, nombre) {
+    document.getElementById('pacienteIdHiddenDoctor').value = id;
+    document.getElementById('pacienteSearchInputDoctor').value = nombre;
+    document.getElementById('pacientesDropdownDoctor').style.display = 'none';
+}
+
+// Filtrar doctores cuando se selecciona especialidad
+function filtrarDoctoresPorEspecialidad() {
+    const especialidad = document.getElementById('especialidadInput').value;
+    const doctorSearchInput = document.getElementById('doctorSearchInput');
+    const dropdown = document.getElementById('doctoresDropdown');
+    const options = dropdown.querySelectorAll('.doctor-option');
+    
+    // Limpiar selección y búsqueda
+    document.getElementById('doctorSelect').value = '';
+    doctorSearchInput.value = '';
+    
+    // Filtrar doctores por especialidad
+    let visibleCount = 0;
+    options.forEach(option => {
+        const docEspecialidad = option.getAttribute('data-especialidad');
+        if (!especialidad || docEspecialidad === especialidad) {
+            option.style.display = 'block';
+            visibleCount++;
+        } else {
+            option.style.display = 'none';
+        }
+    });
+    
+    // Actualizar placeholder
+    if (especialidad) {
+        doctorSearchInput.placeholder = ` Buscar doctor de ${especialidad}...`;
+    } else {
+        doctorSearchInput.placeholder = ' Buscar doctor...';
+    }
+    
+    verificarHorarios();
+}
+
+function verificarHorarios() {
+    const doctorId = document.getElementById('doctorSelect').value;
+    const fecha = document.getElementById('fechaInput').value;
+    
+    if (!doctorId || !fecha) {
+        horariosOcupados = [];
+        return;
+    }
+    
+    fetch(`/api/horarios-disponibles?doctor_id=${doctorId}&fecha=${fecha}`)
+        .then(response => response.json())
+        .then(data => {
+            horariosOcupados = data.horarios_ocupados || [];
+            horaInicio = data.hora_inicio || '08:00';
+            horaFin = data.hora_fin || '17:00';
+            
+            // Actualizar texto del horario laboral
+            document.getElementById('horarioLaboral').textContent = `8:00 am - 5:00 pm`;
+            
+            // Verificar disponibilidad de la hora seleccionada
+            verificarDisponibilidad();
+        });
+}
+
+function verificarDisponibilidad() {
+    const horaSelect = document.getElementById('horaInput');
+    const advertencia = document.getElementById('horaAdvertencia');
+    const advertenciaHorario = document.getElementById('horaAdvertenciaHorario');
+    const btnConfirmar = document.getElementById('btnConfirmar');
+    const hora = horaSelect.value;
+    const fechaInput = document.getElementById('fechaInput');
+    const fechaSeleccionada = fechaInput.value;
+    
+    if (!hora) {
+        advertencia.style.display = 'none';
+        advertenciaHorario.style.display = 'none';
+        btnConfirmar.disabled = false;
+        return;
+    }
+    
+    // Solo verificar si está ocupado (sin validar hora pasada)
+    const estaOcupado = horariosOcupados.includes(hora);
+    
+    if (estaOcupado) {
+        advertencia.style.display = 'block';
+        advertenciaHorario.style.display = 'none';
+        horaSelect.style.borderColor = '#ef4444';
+        horaSelect.style.backgroundColor = '#fee2e2';
+        btnConfirmar.disabled = true;
+    } else {
+        advertencia.style.display = 'none';
+        advertenciaHorario.style.display = 'none';
+        horaSelect.style.borderColor = '';
+        horaSelect.style.backgroundColor = '';
+        btnConfirmar.disabled = false;
+    }
+}
+
+</script>
+{% endblock %}

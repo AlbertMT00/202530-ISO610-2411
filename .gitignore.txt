@@ -1,0 +1,28 @@
+__pycache__/
+*.pyc
+.vscode/
+.azure/
+```
+
+**Colócalos en la raíz de tu proyecto (donde está app.py)**
+
+---
+
+## 🎨 ESTRUCTURA ESPERADA
+```
+medica/
+├── app.py                # Tu backend Python
+├── requirements.txt      # ← NUEVO (dependencias)
+├── startup.txt          # ← NUEVO (comando Azure)
+├── .gitignore           # ← NUEVO (ignorar archivos)
+├── templates/           # Tus HTML
+│   ├── login.html
+│   ├── citas.html
+│   └── ...
+├── static/              # Tus CSS y JS
+│   ├── css/
+│   │   └── site.css
+│   └── js/
+│       └── site.js
+└── database/            # Tu BD
+    └── medica.db
